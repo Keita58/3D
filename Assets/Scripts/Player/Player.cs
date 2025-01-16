@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour
     InputAction _LookAction;
     InputAction _AttackAction;
     InputAction _JumpAction;
+    InputAction _CrouchAction;
     //Rigidbody rb;
 
     [Tooltip("Velocitat de moviment del jugador.")]
@@ -43,6 +45,11 @@ public class Player : MonoBehaviour
     [SerializeField] Collider[] colliders;
     Vector3 camaraInitialPosition;
     bool salto = false;
+    bool moving=false;
+
+    Vector3 localScaleCollider;
+    Vector3 localPositionCollider;
+    bool agachado = false;
 
 
     private void Awake()
@@ -53,13 +60,30 @@ public class Player : MonoBehaviour
         _LookAction = _inputActions.Player.Look;
         _inputActions.Player.Attack.performed += Attack;
         _inputActions.Player.Jump.performed += Jump;
-
+        _inputActions.Player.Crouch.performed += Crouch;
+        localScaleCollider = this.transform.localScale;
 
         _inputActions.Player.Enable();
         //rb = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         camaraInitialPosition = camara.transform.localPosition;
+    }
+
+    private void Crouch(InputAction.CallbackContext context)
+    {
+        if (!agachado)
+        {
+            this.gameObject.GetComponent<CapsuleCollider>().transform.localScale = transform.localScale / 2;
+            this.gameObject.GetComponent<CapsuleCollider>().transform.localPosition = transform.localPosition / 2;
+            agachado = true;
+        }
+        else
+        {
+            this.gameObject.GetComponent<CapsuleCollider>().transform.localScale =localScaleCollider;
+            this.gameObject.GetComponent<CapsuleCollider>().transform.localPosition = this.transform.localPosition;
+            agachado=false;
+        }
     }
 
     private void Jump(InputAction.CallbackContext context)
@@ -77,7 +101,7 @@ public class Player : MonoBehaviour
         Debug.Log("TIRO DEBUGRAY");
     }
 
-    enum PlayerStates { IDLE, MOVE, HURT }
+    enum PlayerStates { IDLE, MOVE, RUN, HURT }
     [SerializeField] PlayerStates actualState;
     [SerializeField] float stateTime;
 
@@ -91,6 +115,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        localPositionCollider = this.transform.localPosition;
         Vector2 lookInput = _LookAction.ReadValue<Vector2>();
         _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
         _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
@@ -117,6 +142,10 @@ public class Player : MonoBehaviour
             case PlayerStates.IDLE:
                 //rb.linearVelocity = Vector2.zero;
                 //rb.angularVelocity = Vector3.zero;
+                break;
+            case PlayerStates.MOVE:
+                moving = true;
+                StartCoroutine(EmetreSOMove());
                 break;
             default:
                 break;
@@ -148,11 +177,6 @@ public class Player : MonoBehaviour
                     vSpeed = jumpSpeed;
                     salto = false;
                 }
-                //Moviment del personatge quan canvia de direccio
-                //rb.linearVelocity =
-                //    (transform.right * movementInput.x +
-                //    transform.forward * movementInput.y)
-                //    .normalized * _Velocity;
                 Vector3 vel = (transform.right * movementInput.x +
                     transform.forward * movementInput.y).normalized * _Velocity;
 
@@ -173,11 +197,39 @@ public class Player : MonoBehaviour
                 //Comentar por si hacemos que haya mini estados.
                 //rb.linearVelocity = Vector2.zero;
                 //rb.angularVelocity = Vector3.zero;
+                moving=false;
                 break;
             default:
-                //RAYCAST ALL PARA LA INTENSIDAD DEL SONIDO, CUANDO TIRA EL SONIDO EL QUE LO RECIBE
                 break;
         }
+    }
+
+    IEnumerator EmetreSOMove()
+    {
+        while (moving)
+        {
+            Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 30);
+            Debug.Log("Mi posicion: " + this.transform.position);
+            foreach (Collider collider in colliderHits)
+            {
+                if (collider.gameObject.TryGetComponent<Enemy>(out Enemy en))
+                {
+                    en.Escuchar(this.transform.position, 1);
+                }
+            }
+            Debug.Log("Corrutina sonido");
+            yield return new WaitForSeconds(3);
+        }
+    }
+
+    IEnumerator EmetreSORun()
+    {
+        Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
+        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemy>(out Enemy en))
+        {
+            en.Escuchar(this.transform.position, 7);
+        }
+        yield return new WaitForSeconds(1);
     }
 
 }
