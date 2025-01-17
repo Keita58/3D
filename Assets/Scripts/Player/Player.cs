@@ -4,20 +4,23 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Player : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    [SerializeField] GameObject camara;
+    [SerializeField] GameObject camaraPrimera;
+    [SerializeField] GameObject camaraTercera;
+    [SerializeField] GameObject _Pivot;
     InputSystem_Actions _inputActions;
     [SerializeField] Transform puntoDisparo;
     [SerializeField] GameObject pistola;
 
     InputAction _MoveAction;
     InputAction _LookAction;
-    InputAction _AttackAction;
-    InputAction _JumpAction;
-    InputAction _CrouchAction;
+    InputAction _ScrollAction;
     //Rigidbody rb;
 
     [Tooltip("Velocitat de moviment del jugador.")]
@@ -40,9 +43,13 @@ public class Player : MonoBehaviour
     float vSpeed = 0;
     float gravity = 9.8f;
     float jumpSpeed = 4.0f;
+    float minDistanceCamera = 3f;
+    float maxDistancecamera = 7f;
 
     [SerializeField] LayerMask layerMask;
+    [SerializeField] LayerMask _CameraCollisionMask;
     [SerializeField] Collider[] colliders;
+    [SerializeField] private float _CameraDistance = 5f;
     Vector3 camaraInitialPosition;
     bool salto = false;
     bool moving=false;
@@ -50,39 +57,67 @@ public class Player : MonoBehaviour
     Vector3 localScaleCollider;
     Vector3 localPositionCollider;
     bool agachado = false;
+    bool primeraPersona = true;
 
 
     private void Awake()
     {
-        Debug.Assert(camara is not null, "Camera no assignada, espabila Hector!");
+        Debug.Assert(camaraPrimera is not null, "Camera no assignada, espabila Hector!");
         _inputActions = new InputSystem_Actions();
         _MoveAction = _inputActions.Player.Move;
         _LookAction = _inputActions.Player.Look;
         _inputActions.Player.Attack.performed += Attack;
         _inputActions.Player.Jump.performed += Jump;
         _inputActions.Player.Crouch.performed += Crouch;
+        _inputActions.Player.CambiarCamera.performed += CambiarCamara;
+        _ScrollAction= _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
 
         _inputActions.Player.Enable();
         //rb = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
-        camaraInitialPosition = camara.transform.localPosition;
+        camaraInitialPosition = camaraPrimera.transform.localPosition;
+    }
+
+    private void CambiarCamara(InputAction.CallbackContext context)
+    {
+        primeraPersona = !primeraPersona;
+        if (primeraPersona)
+        {
+            camaraTercera.gameObject.SetActive(false);
+            camaraPrimera.SetActive(true);
+        }
+        else
+        {
+            camaraPrimera.SetActive(false);
+            camaraTercera.gameObject.SetActive(true);
+        }
     }
 
     private void Crouch(InputAction.CallbackContext context)
     {
         if (!agachado)
         {
-            this.gameObject.GetComponent<CapsuleCollider>().transform.localScale = transform.localScale / 2;
-            this.gameObject.GetComponent<CapsuleCollider>().transform.localPosition = transform.localPosition / 2;
+            this.GetComponent<CapsuleCollider>().height = 1;
+            float center =this.gameObject.GetComponent<CapsuleCollider>().center.y;
+            center = 1f;
+            this.characterController.height = 1f;
+            float centerCharacterController =this.characterController.center.y;
+            centerCharacterController = 1f;
             agachado = true;
+            _Velocity /= 2;
         }
         else
         {
-            this.gameObject.GetComponent<CapsuleCollider>().transform.localScale =localScaleCollider;
-            this.gameObject.GetComponent<CapsuleCollider>().transform.localPosition = this.transform.localPosition;
-            agachado=false;
+            this.GetComponent<CapsuleCollider>().height = 2;
+            float center = this.gameObject.GetComponent<CapsuleCollider>().center.y;
+            center = 0f;
+            this.characterController.height = 2f;
+            float centerCharacterController = this.characterController.center.y;
+            centerCharacterController = 0f;
+            agachado =false;
+            _Velocity *= 2;
         }
     }
 
@@ -116,14 +151,26 @@ public class Player : MonoBehaviour
     void Update()
     {
         localPositionCollider = this.transform.localPosition;
-        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
-        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
-        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
 
-        _LookRotation.y = Mathf.Clamp(_LookRotation.y, minAngle, maxAngle);
-        transform.rotation = Quaternion.Euler(0, _LookRotation.x, 0);
-        camara.transform.localRotation = Quaternion.Euler(_LookRotation.y, 0, 0);
         UpdateState();
+        if (primeraPersona)
+        {
+            MovimentCamera1aPersona();
+        }
+        else
+        {
+            MovimentCamera();
+        }
+
+        float zoom = _ScrollAction.ReadValue<float>();
+        if (zoom > 0)
+        {
+            if (_CameraDistance>=minDistanceCamera) _CameraDistance--;
+        }else if (zoom < 0)
+        {
+            if (_CameraDistance<=maxDistancecamera) _CameraDistance++;
+        }
+
     }
 
     private void ChangeState(PlayerStates newstate)
@@ -187,6 +234,7 @@ public class Player : MonoBehaviour
 
                 break;
         }
+
     }
 
     private void ExitState(PlayerStates exitState)
@@ -231,5 +279,40 @@ public class Player : MonoBehaviour
         }
         yield return new WaitForSeconds(1);
     }
+
+    public void MovimentCamera()
+    {
+        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
+
+        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
+        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
+        
+        _LookRotation.y = Mathf.Clamp(_LookRotation.y, -35, 35);
+        //camaraTercera.UpdateCamera(_LookRotation, _CameraDistance);
+        camaraTercera.transform.position = _Pivot.transform.position;
+        camaraTercera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
+        if (Physics.Raycast(camaraTercera.transform.position, -camaraTercera.transform.forward, out RaycastHit hit, _CameraDistance, _CameraCollisionMask))
+        {
+            camaraTercera.transform.position = hit.point + camaraTercera.transform.forward * 0.1f;
+        }
+        else
+        {
+            camaraTercera.transform.position -= camaraTercera.transform.forward * _CameraDistance;
+        }
+        //camaraTercera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
+        transform.forward = Vector3.ProjectOnPlane(camaraTercera.transform.forward, Vector3.up);
+    }
+
+    public void MovimentCamera1aPersona()
+    {
+        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
+        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
+        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
+
+        _LookRotation.y = Mathf.Clamp(_LookRotation.y, minAngle, maxAngle);
+        transform.rotation = Quaternion.Euler(0, _LookRotation.x, 0);
+        camaraPrimera.transform.localRotation = Quaternion.Euler(_LookRotation.y, 0, 0);
+    }
+
 
 }

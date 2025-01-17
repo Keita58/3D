@@ -157,7 +157,6 @@ public class Enemic : MonoBehaviour
     {
         UpdateState(_CurrentState);
 
-        MovimentCamera(); //Treure quan ho tingui Jugador
     }
 
     IEnumerator Patrullar()
@@ -213,17 +212,5 @@ public class Enemic : MonoBehaviour
             else if(_CurrentState == EnemyStates.PATRULLA)
                 ChangeState(EnemyStates.INVESTIGAR);
         }
-    }
-
-    //Script de la càmera pel jugador
-    public void MovimentCamera() //Treure quan ho tingui Jugador
-    {
-        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
-
-        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
-        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
-
-        _LookRotation.y = Mathf.Clamp(_LookRotation.y, -35, 35);
-        _Camera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
     }
 }
