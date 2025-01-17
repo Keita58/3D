@@ -20,21 +20,21 @@ public class Enemic : MonoBehaviour
     [SerializeField] private LayerMask _LayerJugador;
     [SerializeField] private GameObject _Jugador;
     [SerializeField] private GameObject[] _PuntsMapa;
-    [SerializeField] private GameObject _Camera;
+    [SerializeField] private GameObject _Camera; //Treure quan ho tingui Jugador
     [SerializeField] private bool _InvertY = true;
 
     [Tooltip("Velocitat de mouse en graus per segon.")]
     [Range(10f, 360f)]
-    [SerializeField] private float _LookVelocity = 180;
+    [SerializeField] private float _LookVelocity = 180; //Treure quan ho tingui Jugador
 
     private NavMeshAgent _NavMeshAgent;
     private Collider[] _Atacar;
     private System.Random _Random;
     private Animator _Animacio;
     private InputSystem_Actions _InputActions;
-    private InputAction _LookAction;
+    private InputAction _LookAction; //Treure quan ho tingui Jugador
     private InputAction _MoveAction;
-    private Vector2 _LookRotation;
+    private Vector2 _LookRotation; //Treure quan ho tingui Jugador
 
     private void Awake()
     {
@@ -79,6 +79,7 @@ public class Enemic : MonoBehaviour
                 _Animacio.Play("Run");
                 break;
             case EnemyStates.PERSEGUIR:
+                _Animacio.Play("Run");
                 break;
             case EnemyStates.ATACAR:
                 break;
@@ -98,28 +99,30 @@ public class Enemic : MonoBehaviour
         {
             case EnemyStates.INVESTIGAR:
                 _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
+                
+                if (_DetectarCollider.Length > 0)
+                {
+                    Debug.Log("Detecto alguna cosa aprop!");
+                    _NavMeshAgent.destination = _Jugador.transform.position;
+                    ChangeState(EnemyStates.PERSEGUIR);
+                }
+                
+                break;
+            case EnemyStates.PERSEGUIR:
+                _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
                 _Atacar = Physics.OverlapSphere(transform.position, 5f, _LayerJugador);
 
-                if (_Atacar.Length > 0)
+                if (_DetectarCollider.Length > 0)
                 {
-                    ChangeState(EnemyStates.ATACAR);
+                    Debug.Log("Detecto alguna cosa aprop!");
+                    _NavMeshAgent.destination = _Jugador.transform.position;
+                    ChangeState(EnemyStates.PERSEGUIR);
                 }
                 else
                 {
-                    Debug.Log("Detecto!");
-                    if (_DetectarCollider.Length > 0)
-                    {
-                        Debug.Log("Detecto alguna cosa aprop!");
-                        _NavMeshAgent.destination = _Jugador.transform.position;
-                    }
-                    else
-                    {
-                        Debug.Log("No detecto res!");
-                        _NavMeshAgent.destination = transform.position;
-                    }
+                    Debug.Log("No detecto res!");
+                    _NavMeshAgent.destination = transform.position;
                 }
-                break;
-            case EnemyStates.PERSEGUIR:
                 break;
             case EnemyStates.ATACAR:
                 break;
@@ -134,6 +137,9 @@ public class Enemic : MonoBehaviour
     {
         switch (exitState)
         {
+            case EnemyStates.PATRULLA:
+                _Detectat = true;
+                break;
             case EnemyStates.INVESTIGAR:
             case EnemyStates.PERSEGUIR:
                 break;
@@ -151,13 +157,7 @@ public class Enemic : MonoBehaviour
     {
         UpdateState(_CurrentState);
 
-        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
-
-        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
-        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
-
-        _LookRotation.y = Mathf.Clamp(_LookRotation.y, -35, 35);
-        _Camera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
+        MovimentCamera(); //Treure quan ho tingui Jugador
     }
 
     IEnumerator Patrullar()
@@ -191,5 +191,39 @@ public class Enemic : MonoBehaviour
 
             yield return new WaitForSeconds(1);
         }
+    }
+
+    public void Escuchar(Vector3 pos, int nivellSo)
+    {
+        RaycastHit[] hits = Physics.RaycastAll(this.transform.position, pos - this.transform.position, Vector3.Distance(pos, this.transform.position));
+        //Debug.Log("Antes: " + nivellSo);
+        foreach (RaycastHit hit in hits)
+        {
+            Debug.Log(hit.collider.gameObject.name);
+            if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
+            {
+                nivellSo = a.atenuarSo(nivellSo);
+            }
+        }
+        //Debug.Log("Despues: " + nivellSo);
+        if (nivellSo == 1)
+        {
+            if(_CurrentState == EnemyStates.INVESTIGAR)
+                _NavMeshAgent.SetDestination(pos);
+            else if(_CurrentState == EnemyStates.PATRULLA)
+                ChangeState(EnemyStates.INVESTIGAR);
+        }
+    }
+
+    //Script de la càmera pel jugador
+    public void MovimentCamera() //Treure quan ho tingui Jugador
+    {
+        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
+
+        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
+        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
+
+        _LookRotation.y = Mathf.Clamp(_LookRotation.y, -35, 35);
+        _Camera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
     }
 }
