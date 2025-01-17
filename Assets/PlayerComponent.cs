@@ -47,11 +47,7 @@ public class PlayerComponent : MonoBehaviour
 
         _RigidBody = GetComponent<Rigidbody>();
     }
-    private void Start()
-    {
-        a = true;
-        StartCoroutine(EmetreSOMove());
-    }
+
     private void Update()
     {
         //C�mera
@@ -75,50 +71,42 @@ public class PlayerComponent : MonoBehaviour
         // Aquest moviment no interessa perqu� no t� en compte la rotaci� de l'objecte
         //_RigidBody.linearVelocity = (new Vector3(movementInput.x, 0, movementInput.y)).normalized * 3;
     }
-    bool a = false;
+    bool a = true;
     public void Move()
     {
         //Moviment
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
-        if (movementInput.x != 0 || movementInput.y != 0)
+        if (movementInput.x != 0 || movementInput.y != 0 && !a)
         {
-            a = true;
-    //        StartCoroutine(EmetreSOMove());
-        }
-        else
-        {
-            a = false;
+          //  EmetreSOMove();
         }
         _RigidBody.linearVelocity =
             (transform.right * movementInput.x +
             transform.forward * movementInput.y)
             .normalized * _Velocity;
     }
-    IEnumerator EmetreSOMove()
+    void EmetreSOMove()
     {
-        while (true)
-        {
+        a = true;
             Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 30);
-            Debug.Log("Mi posicion: " + this.transform.position);
             foreach (Collider collider in colliderHits)
             {
                 if (collider.gameObject.TryGetComponent<Enemy>(out Enemy en))
                 {
-                    en.Escuchar(this.transform.position, 1);
+                    en.Escuchar(this.transform.position, 2);
                 }
             }
-            Debug.Log("Corrutina sonido");
-            yield return new WaitForSeconds(3);
-        }
+             new WaitForSeconds(3);
+        a = false;
     }
-    IEnumerator EmetreSORun()
+    void EmetreSORun()
     {
         Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
         if (GetComponent<Collider>().gameObject.TryGetComponent<Enemy>(out Enemy en))
         {
             en.Escuchar(this.transform.position, 7);
         }
-        yield return new WaitForSeconds(1);
+        new WaitForSeconds(1);
     }
 
 }
