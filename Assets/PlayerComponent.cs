@@ -71,38 +71,48 @@ public class PlayerComponent : MonoBehaviour
         // Aquest moviment no interessa perqu� no t� en compte la rotaci� de l'objecte
         //_RigidBody.linearVelocity = (new Vector3(movementInput.x, 0, movementInput.y)).normalized * 3;
     }
-    bool a = true;
+    bool a = false;
     public void Move()
     {
         //Moviment
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
-        if (movementInput.x != 0 || movementInput.y != 0 && !a)
+        print(movementInput);
+        if ((movementInput.x != 0 || movementInput.y != 0))
         {
-          //  EmetreSOMove();
+            if (!a)
+            {
+                a = true;
+                StartCoroutine(EmetreSOMove());
+            }
+        }
+        else
+        {
+            a = false;
         }
         _RigidBody.linearVelocity =
             (transform.right * movementInput.x +
             transform.forward * movementInput.y)
             .normalized * _Velocity;
     }
-    void EmetreSOMove()
+    IEnumerator EmetreSOMove()
     {
-        a = true;
+        while (a)
+        {
             Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 30);
             foreach (Collider collider in colliderHits)
             {
-                if (collider.gameObject.TryGetComponent<Enemy>(out Enemy en))
+                if (collider.gameObject.TryGetComponent<Enemic>(out Enemic en))
                 {
                     en.Escuchar(this.transform.position, 2);
                 }
             }
-             new WaitForSeconds(3);
-        a = false;
+            yield return new WaitForSeconds(1);
+        }
     }
     void EmetreSORun()
     {
         Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
-        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemy>(out Enemy en))
+        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
         {
             en.Escuchar(this.transform.position, 7);
         }

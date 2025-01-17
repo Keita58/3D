@@ -25,19 +25,21 @@ public class ObjectsScript : MonoBehaviour
     {
         Lanzar();
     }
+    bool lanzado = false;
     void Lanzar()
     {
         this.GetComponent<Rigidbody>().AddForce(pc.transform.forward.x*100, 554, pc.transform.forward.z* 100);
-
+        lanzado = true;
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.name != "Player") {
+        if (collision.collider.name != "Player" && lanzado) {
+            lanzado=false;
             Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 30);
             foreach (Collider collider in colliderHits)
             {
                 Debug.Log("Enemic: "+collider.gameObject.name);
-                if (collider.gameObject.TryGetComponent<Enemy>(out Enemy en))
+                if (collider.gameObject.TryGetComponent<Enemic>(out Enemic en))
                 {
                     en.Escuchar(this.transform.position, mySound.intesitatSo);
                 }

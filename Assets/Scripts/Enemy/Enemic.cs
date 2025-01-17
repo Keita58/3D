@@ -30,18 +30,19 @@ public class Enemic : MonoBehaviour
     private NavMeshAgent _NavMeshAgent;
     private Collider[] _Atacar;
     private System.Random _Random;
-    private Animator _Animacio;
+    //private Animator _Animacio;
     private InputSystem_Actions _InputActions;
     private InputAction _LookAction; //Treure quan ho tingui Jugador
     private InputAction _MoveAction;
     private Vector2 _LookRotation; //Treure quan ho tingui Jugador
+    [SerializeField] RaycastHit[] hits;
 
     private void Awake()
     {
         _InputActions = new InputSystem_Actions();
         _MoveAction = _InputActions.Player.Move;
         _LookAction = _InputActions.Player.Look;
-        _Animacio = GetComponent<Animator>();
+     //   _Animacio = GetComponent<Animator>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
         _InputActions.Player.Enable();
@@ -71,15 +72,15 @@ public class Enemic : MonoBehaviour
         switch (_CurrentState)
         {
             case EnemyStates.PATRULLA:
-                _Animacio.Play("Run");
+             //   _Animacio.Play("Run");
                 _Detectat = false;
                 StartCoroutine(Patrullar());
                 break;
             case EnemyStates.INVESTIGAR:
-                _Animacio.Play("Run");
+               // _Animacio.Play("Run");
                 break;
             case EnemyStates.PERSEGUIR:
-                _Animacio.Play("Run");
+                //_Animacio.Play("Run");
                 break;
             case EnemyStates.ATACAR:
                 break;
@@ -116,10 +117,10 @@ public class Enemic : MonoBehaviour
                 {
                     Debug.Log("Detecto alguna cosa aprop!");
                     _NavMeshAgent.destination = _Jugador.transform.position;
-                    ChangeState(EnemyStates.PERSEGUIR);
                 }
                 else
                 {
+                    ChangeState(EnemyStates.PATRULLA);
                     Debug.Log("No detecto res!");
                     _NavMeshAgent.destination = transform.position;
                 }
@@ -167,7 +168,7 @@ public class Enemic : MonoBehaviour
         {
             if (!_Cami)
             {
-                _Animacio.Play("Run");
+           //     _Animacio.Play("Run");
                 coord = _PuntsMapa[_Random.Next(0, _PuntsMapa.Length - 1)].transform.position;
                 Debug.Log(coord);
                 _NavMeshAgent.destination = new Vector3(coord.x, transform.position.y, coord.z);
@@ -176,13 +177,13 @@ public class Enemic : MonoBehaviour
 
             if (transform.position == new Vector3(coord.x, transform.position.y, coord.z))
             { 
-                _Animacio.Play("Idle");
+             //   _Animacio.Play("Idle");
                 _Cami = false;
             }
 
             _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
 
-            if (_DetectarCollider.Length > 0 && _DetectarCollider[0].transform.tag.Equals("Player"))
+            if (_DetectarCollider.Length > 0)
             {
                 ChangeState(EnemyStates.INVESTIGAR);
                 _Detectat = true;
@@ -195,24 +196,26 @@ public class Enemic : MonoBehaviour
 
     public void Escuchar(Vector3 pos, int nivellSo)
     {
-        RaycastHit[] hits = Physics.RaycastAll(this.transform.position, pos - this.transform.position, Vector3.Distance(pos, this.transform.position));
-        //Debug.Log("Antes: " + nivellSo);
-        foreach (RaycastHit hit in hits)
-        {
-            Debug.Log(hit.collider.gameObject.name);
-            if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
+            hits = Physics.RaycastAll(this.transform.position, pos - this.transform.position, Vector3.Distance(pos, this.transform.position));
+            Debug.DrawLine(this.transform.position, pos - this.transform.position, Color.red, 10f);
+            foreach (RaycastHit hit in hits)
             {
-                nivellSo = a.atenuarSo(nivellSo);
+                Debug.Log(hit.collider.gameObject.name);
+                if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
+                {
+                    nivellSo = a.atenuarSo(nivellSo);
+                }
             }
-        }
-        //Debug.Log("Despues: " + nivellSo);
-        if (nivellSo == 1)
-        {
-            if(_CurrentState == EnemyStates.INVESTIGAR)
-                _NavMeshAgent.SetDestination(pos);
-            else if(_CurrentState == EnemyStates.PATRULLA)
-                ChangeState(EnemyStates.INVESTIGAR);
-        }
+            if (nivellSo >= 2)
+            {
+            _NavMeshAgent.SetDestination(pos);
+            }
+            else if (nivellSo >= 1)
+            {
+                print("a");
+                Vector3 r = new Vector3((float)UnityEngine.Random.Range(pos.x - 10, pos.x + 10), this.transform.position.y, UnityEngine.Random.Range(pos.z - 10, pos.z + 10));
+            _NavMeshAgent.SetDestination(r);
+            }
     }
 
     //Script de la càmera pel jugador
@@ -226,4 +229,5 @@ public class Enemic : MonoBehaviour
         _LookRotation.y = Mathf.Clamp(_LookRotation.y, -35, 35);
         _Camera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
     }
+
 }
