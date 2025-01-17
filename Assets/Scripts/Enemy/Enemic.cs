@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
 
-public class Enemic : MonoBehaviour
+public class Enemic : MonoBehaviour, IDamageable
 {
     private enum EnemyStates { PATRULLA, INVESTIGAR, PERSEGUIR, ATACAR, NOQUEJAT }
     [SerializeField] private EnemyStates _CurrentState;
@@ -20,27 +21,18 @@ public class Enemic : MonoBehaviour
     [SerializeField] private LayerMask _LayerJugador;
     [SerializeField] private GameObject _Jugador;
     [SerializeField] private GameObject[] _PuntsMapa;
-    [SerializeField] private GameObject _Camera; //Treure quan ho tingui Jugador
-    [SerializeField] private bool _InvertY = true;
-
-    [Tooltip("Velocitat de mouse en graus per segon.")]
-    [Range(10f, 360f)]
-    [SerializeField] private float _LookVelocity = 180; //Treure quan ho tingui Jugador
 
     private NavMeshAgent _NavMeshAgent;
     private Collider[] _Atacar;
     private System.Random _Random;
     private Animator _Animacio;
     private InputSystem_Actions _InputActions;
-    private InputAction _LookAction; //Treure quan ho tingui Jugador
     private InputAction _MoveAction;
-    private Vector2 _LookRotation; //Treure quan ho tingui Jugador
 
     private void Awake()
     {
         _InputActions = new InputSystem_Actions();
         _MoveAction = _InputActions.Player.Move;
-        _LookAction = _InputActions.Player.Look;
         _Animacio = GetComponent<Animator>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
@@ -116,12 +108,12 @@ public class Enemic : MonoBehaviour
                 {
                     Debug.Log("Detecto alguna cosa aprop!");
                     _NavMeshAgent.destination = _Jugador.transform.position;
-                    ChangeState(EnemyStates.PERSEGUIR);
                 }
                 else
                 {
                     Debug.Log("No detecto res!");
                     _NavMeshAgent.destination = transform.position;
+                    ChangeState(EnemyStates.PATRULLA);
                 }
                 break;
             case EnemyStates.ATACAR:
@@ -156,19 +148,21 @@ public class Enemic : MonoBehaviour
     private void Update()
     {
         UpdateState(_CurrentState);
-
-        MovimentCamera(); //Treure quan ho tingui Jugador
     }
 
     IEnumerator Patrullar()
     {
         Vector3 coord = Vector3.zero;
+        float range = 30.0f;
         while (!_Detectat)
         {
             if (!_Cami)
             {
                 _Animacio.Play("Run");
-                coord = _PuntsMapa[_Random.Next(0, _PuntsMapa.Length - 1)].transform.position;
+                if (RandomPoint(transform.position, range, out coord))
+                {
+                    Debug.DrawRay(coord, Vector3.up, UnityEngine.Color.black, 1.0f);
+                }
                 Debug.Log(coord);
                 _NavMeshAgent.destination = new Vector3(coord.x, transform.position.y, coord.z);
                 _Cami = true;
@@ -182,7 +176,7 @@ public class Enemic : MonoBehaviour
 
             _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
 
-            if (_DetectarCollider.Length > 0 && _DetectarCollider[0].transform.tag.Equals("Player"))
+            if (_DetectarCollider.Length > 0)
             {
                 ChangeState(EnemyStates.INVESTIGAR);
                 _Detectat = true;
@@ -191,6 +185,26 @@ public class Enemic : MonoBehaviour
 
             yield return new WaitForSeconds(1);
         }
+    }
+
+    //Busca punt aleatori dins del NavMesh
+    private bool RandomPoint(Vector3 center, float range, out Vector3 result)
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            //Agafa un punt aleatori dins de l'esfera amb el radi que passem per paràmetre
+            Vector3 randomPoint = center + UnityEngine.Random.insideUnitSphere * range;
+            NavMeshHit hit;
+
+            //Comprovem que el punt que hem agafat està dins del NavMesh
+            if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
+            {
+                result = hit.position;
+                return true;
+            }
+        }
+        result = Vector3.zero;
+        return false;
     }
 
     public void Escuchar(Vector3 pos, int nivellSo)
@@ -215,15 +229,8 @@ public class Enemic : MonoBehaviour
         }
     }
 
-    //Script de la càmera pel jugador
-    public void MovimentCamera() //Treure quan ho tingui Jugador
+    public void RebreMal(float damage)
     {
-        Vector2 lookInput = _LookAction.ReadValue<Vector2>();
-
-        _LookRotation.x += lookInput.x * _LookVelocity * Time.deltaTime;
-        _LookRotation.y += (_InvertY ? 1 : -1) * lookInput.y * _LookVelocity * Time.deltaTime;
-
-        _LookRotation.y = Mathf.Clamp(_LookRotation.y, -35, 35);
-        _Camera.transform.localRotation = Quaternion.Euler(_LookRotation.y, _LookRotation.x, 0);
+        throw new NotImplementedException();
     }
 }
