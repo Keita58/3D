@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
     float maxDistancecamera = 7f;
 
     [SerializeField] LayerMask layerMask;
+    [SerializeField] LayerMask _InteractLayerMask;
     [SerializeField] LayerMask _CameraCollisionMask;
     [SerializeField] Collider[] colliders;
     [SerializeField] private float _CameraDistance = 5f;
@@ -102,7 +103,7 @@ public class Player : MonoBehaviour
             this.GetComponent<CapsuleCollider>().height = 1;
             float center =this.gameObject.GetComponent<CapsuleCollider>().center.y;
             center = 1f;
-            this.characterController.height = 1f;
+            this.characterController.height=1f;
             float centerCharacterController =this.characterController.center.y;
             centerCharacterController = 1f;
             agachado = true;
@@ -116,7 +117,11 @@ public class Player : MonoBehaviour
             this.characterController.height = 2f;
             float centerCharacterController = this.characterController.center.y;
             centerCharacterController = 0f;
-            agachado =false;
+            this.gameObject.GetComponent<CapsuleCollider>().enabled = false;
+            this.gameObject.GetComponent<CapsuleCollider>().enabled = true;
+            characterController.enabled = false;
+            characterController.enabled=true;
+            agachado = false;
             _Velocity *= 2;
         }
     }
@@ -136,7 +141,7 @@ public class Player : MonoBehaviour
         Debug.Log("TIRO DEBUGRAY");
     }
 
-    enum PlayerStates { IDLE, MOVE, RUN, HURT }
+    enum PlayerStates { MOVE, RUN, HURT }
     [SerializeField] PlayerStates actualState;
     [SerializeField] float stateTime;
 
@@ -144,7 +149,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         Cursor.visible = false;
-        ChangeState(PlayerStates.IDLE);
+        ChangeState(PlayerStates.MOVE);
+        StartCoroutine(interactuarRaycast());
 
     }
 
@@ -171,6 +177,24 @@ public class Player : MonoBehaviour
             if (_CameraDistance<=maxDistancecamera) _CameraDistance++;
         }
 
+       
+
+    }
+
+    public IEnumerator interactuarRaycast()
+    {
+        while (true)
+        {
+            Debug.DrawRay(camaraPrimera.transform.position, camaraPrimera.transform.forward, Color.magenta, 5f);
+            //Lanzar Raycast interactuar con el mundo.
+            if (Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hit, 100f, _InteractLayerMask))
+            {
+                Debug.Log("TOCO ITEM");
+            }
+            yield return new WaitForSeconds(1f);
+        }
+
+       
     }
 
     private void ChangeState(PlayerStates newstate)
@@ -186,10 +210,6 @@ public class Player : MonoBehaviour
 
         switch (actualState)
         {
-            case PlayerStates.IDLE:
-                //rb.linearVelocity = Vector2.zero;
-                //rb.angularVelocity = Vector3.zero;
-                break;
             case PlayerStates.MOVE:
                 moving = true;
                 StartCoroutine(EmetreSOMove());
@@ -201,24 +221,13 @@ public class Player : MonoBehaviour
 
     private void UpdateState()
     {
-        //_Moviment s l'action de l'InputAction especfic de Player
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
 
         stateTime += Time.deltaTime;
 
         switch (actualState)
         {
-            case PlayerStates.IDLE:
-                if (!characterController.isGrounded || movementInput != Vector2.zero || salto)
-                    ChangeState(PlayerStates.MOVE);
-                break;
             case PlayerStates.MOVE:
-                if (movementInput == Vector2.zero && characterController.isGrounded && !salto)
-                {
-                    ChangeState(PlayerStates.IDLE);
-
-                    break;
-                }
                 if (salto)
                 {
                     vSpeed = jumpSpeed;

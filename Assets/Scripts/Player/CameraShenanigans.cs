@@ -14,7 +14,7 @@ public class CameraShenanigans : MonoBehaviour
         }
         else
         {
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, _Camera.localRotation, Time.deltaTime * _DelayFactor);
+            //transform.localRotation = Quaternion.Lerp(transform.localRotation, _Camera.localRotation, Time.deltaTime * _DelayFactor);
         }
     }
 }
