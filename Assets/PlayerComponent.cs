@@ -76,7 +76,7 @@ public class PlayerComponent : MonoBehaviour
     {
         //Moviment
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
-        print(movementInput);
+        //print(movementInput);
         if ((movementInput.x != 0 || movementInput.y != 0))
         {
             if (!a)
