@@ -17,10 +17,9 @@ public class Enemic : MonoBehaviour, IDamageable
     [SerializeField] private bool _Detectat;
     [SerializeField] private bool _Cami;
     [SerializeField] private bool _AtacarBoolean;
-    [SerializeField] private Collider[] _DetectarCollider;
+    [SerializeField] private Collider _DetectarCollider;
     [SerializeField] private LayerMask _LayerJugador;
     [SerializeField] private GameObject _Jugador;
-    [SerializeField] private GameObject[] _PuntsMapa;
 
     private NavMeshAgent _NavMeshAgent;
     private Collider[] _Atacar;
@@ -28,6 +27,8 @@ public class Enemic : MonoBehaviour, IDamageable
     private Animator _Animacio;
     private InputSystem_Actions _InputActions;
     private InputAction _MoveAction;
+    private Vector3 _PuntSo; //Punt d'on prové el so, tant jugador com objecte
+    private bool _InvestigarSo;
 
     private void Awake()
     {
@@ -44,6 +45,7 @@ public class Enemic : MonoBehaviour, IDamageable
         _Random = new System.Random();
         InitState(EnemyStates.PATRULLA);
         Cursor.lockState = CursorLockMode.Locked;
+        _InvestigarSo = false;
     }
 
     private void ChangeState(EnemyStates newState)
@@ -69,6 +71,9 @@ public class Enemic : MonoBehaviour, IDamageable
                 break;
             case EnemyStates.INVESTIGAR:
                 _Animacio.Play("Run");
+                _InvestigarSo = true;
+                StartCoroutine(Investigar());
+                StartCoroutine(EsperarCanvi(10)); //Temps d'espera per canviar a patrulla (té posat un chage a patrulla)
                 break;
             case EnemyStates.PERSEGUIR:
                 _Animacio.Play("Run");
@@ -90,21 +95,16 @@ public class Enemic : MonoBehaviour, IDamageable
         switch (updateState)
         {
             case EnemyStates.INVESTIGAR:
-                _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
-                
-                if (_DetectarCollider.Length > 0)
+                if (Physics.Raycast(transform.position, transform.forward, 10f, _LayerJugador))
                 {
                     Debug.Log("Detecto alguna cosa aprop!");
                     _NavMeshAgent.destination = _Jugador.transform.position;
                     ChangeState(EnemyStates.PERSEGUIR);
+                    StopAllCoroutines();
                 }
-                
                 break;
             case EnemyStates.PERSEGUIR:
-                _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
-                _Atacar = Physics.OverlapSphere(transform.position, 5f, _LayerJugador);
-
-                if (_DetectarCollider.Length > 0)
+                if (Physics.Raycast(transform.position, transform.forward, 10f, _LayerJugador))
                 {
                     Debug.Log("Detecto alguna cosa aprop!");
                     _NavMeshAgent.destination = _Jugador.transform.position;
@@ -113,7 +113,7 @@ public class Enemic : MonoBehaviour, IDamageable
                 {
                     Debug.Log("No detecto res!");
                     _NavMeshAgent.destination = transform.position;
-                    ChangeState(EnemyStates.PATRULLA);
+                    ChangeState(EnemyStates.INVESTIGAR);
                 }
                 break;
             case EnemyStates.ATACAR:
@@ -133,6 +133,8 @@ public class Enemic : MonoBehaviour, IDamageable
                 _Detectat = true;
                 break;
             case EnemyStates.INVESTIGAR:
+                _InvestigarSo = false;
+                break;
             case EnemyStates.PERSEGUIR:
                 break;
             case EnemyStates.ATACAR:
@@ -173,17 +175,17 @@ public class Enemic : MonoBehaviour, IDamageable
                 _Animacio.Play("Idle");
                 _Cami = false;
             }
-
-            _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
-
-            if (_DetectarCollider.Length > 0)
-            {
-                ChangeState(EnemyStates.INVESTIGAR);
-                _Detectat = true;
-                _Cami = false;
-            }
-
             yield return new WaitForSeconds(1);
+        }
+    }
+
+
+    IEnumerator Investigar()
+    {
+        while(_InvestigarSo)
+        {
+            yield return new WaitForSeconds(1f);
+            RandomPoint(_PuntSo, 2.5f, out _);
         }
     }
 
@@ -209,8 +211,8 @@ public class Enemic : MonoBehaviour, IDamageable
 
     public void Escuchar(Vector3 pos, int nivellSo)
     {
-        RaycastHit[] hits = Physics.RaycastAll(this.transform.position, pos - this.transform.position, Vector3.Distance(pos, this.transform.position));
-        //Debug.Log("Antes: " + nivellSo);
+        _PuntSo = pos;
+        RaycastHit[] hits = Physics.RaycastAll(this.transform.position, _PuntSo - this.transform.position, Vector3.Distance(_PuntSo, this.transform.position));
         foreach (RaycastHit hit in hits)
         {
             Debug.Log(hit.collider.gameObject.name);
@@ -219,18 +221,32 @@ public class Enemic : MonoBehaviour, IDamageable
                 nivellSo = a.atenuarSo(nivellSo);
             }
         }
-        //Debug.Log("Despues: " + nivellSo);
+
         if (nivellSo == 1)
         {
             if(_CurrentState == EnemyStates.INVESTIGAR)
-                _NavMeshAgent.SetDestination(pos);
+                _NavMeshAgent.SetDestination(_PuntSo);
             else if(_CurrentState == EnemyStates.PATRULLA)
+            {
+                RandomPoint(_PuntSo, 5f, out _);
                 ChangeState(EnemyStates.INVESTIGAR);
+            }
         }
     }
 
     public void RebreMal(float damage)
     {
         throw new NotImplementedException();
+    }
+
+    private void OnDrawGizmos()
+    {
+        //Gizmos.DrawSphere(transform.position, 10f);
+    }
+
+    IEnumerator EsperarCanvi(int n)
+    {
+        yield return new WaitForSeconds(n);
+        ChangeState(EnemyStates.PATRULLA);
     }
 }
