@@ -23,7 +23,7 @@ public class Enemy : MonoBehaviour
     {
 
         hits = Physics.RaycastAll(this.transform.position, pos-this.transform.position, Vector3.Distance(pos, this.transform.position));
-        Debug.Log("Antes: " + nivellSo);
+        Debug.DrawLine(this.transform.position, pos-this.transform.position, Color.red, 10f);
         foreach (RaycastHit hit in hits)
         {
             Debug.Log(hit.collider.gameObject.name);
@@ -32,11 +32,15 @@ public class Enemy : MonoBehaviour
                 nivellSo = a.atenuarSo(nivellSo);
             }
         }
-        Debug.Log("Despues: " + nivellSo);
-        if (nivellSo == 1)
+        if(nivellSo >= 2)
         {
             agent.SetDestination(pos);
-
+        }
+        else if (nivellSo >= 1)
+        {
+            print("a");
+            Vector3 r = new Vector3((float)UnityEngine.Random.Range(pos.x - 10, pos.x + 10), this.transform.position.y, UnityEngine.Random.Range(pos.z - 10, pos.z + 10));
+            agent.SetDestination(r);
         } 
     }
     public void move()

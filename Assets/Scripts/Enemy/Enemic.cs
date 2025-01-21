@@ -24,17 +24,17 @@ public class Enemic : MonoBehaviour, IDamageable
     private NavMeshAgent _NavMeshAgent;
     private Collider[] _Atacar;
     private System.Random _Random;
-    private Animator _Animacio;
+    //private Animator _Animacio;
     private InputSystem_Actions _InputActions;
     private InputAction _MoveAction;
-    private Vector3 _PuntSo; //Punt d'on prové el so, tant jugador com objecte
+    private Vector3 _PuntSo; //Punt d'on provï¿½ el so, tant jugador com objecte
     private bool _InvestigarSo;
 
     private void Awake()
     {
         _InputActions = new InputSystem_Actions();
         _MoveAction = _InputActions.Player.Move;
-        _Animacio = GetComponent<Animator>();
+     //   _Animacio = GetComponent<Animator>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
         _InputActions.Player.Enable();
@@ -65,7 +65,7 @@ public class Enemic : MonoBehaviour, IDamageable
         switch (_CurrentState)
         {
             case EnemyStates.PATRULLA:
-                _Animacio.Play("Run");
+             //   _Animacio.Play("Run");
                 _Detectat = false;
                 StartCoroutine(Patrullar());
                 break;
@@ -73,10 +73,10 @@ public class Enemic : MonoBehaviour, IDamageable
                 _Animacio.Play("Run");
                 _InvestigarSo = true;
                 StartCoroutine(Investigar());
-                StartCoroutine(EsperarCanvi(10)); //Temps d'espera per canviar a patrulla (té posat un chage a patrulla)
+                StartCoroutine(EsperarCanvi(10)); //Temps d'espera per canviar a patrulla (tï¿½ posat un chage a patrulla)
                 break;
             case EnemyStates.PERSEGUIR:
-                _Animacio.Play("Run");
+                //_Animacio.Play("Run");
                 break;
             case EnemyStates.ATACAR:
                 break;
@@ -111,6 +111,7 @@ public class Enemic : MonoBehaviour, IDamageable
                 }
                 else
                 {
+                    ChangeState(EnemyStates.PATRULLA);
                     Debug.Log("No detecto res!");
                     _NavMeshAgent.destination = transform.position;
                     ChangeState(EnemyStates.INVESTIGAR);
@@ -160,7 +161,7 @@ public class Enemic : MonoBehaviour, IDamageable
         {
             if (!_Cami)
             {
-                _Animacio.Play("Run");
+              //  _Animacio.Play("Run");
                 if (RandomPoint(transform.position, range, out coord))
                 {
                     Debug.DrawRay(coord, Vector3.up, UnityEngine.Color.black, 1.0f);
@@ -172,7 +173,7 @@ public class Enemic : MonoBehaviour, IDamageable
 
             if (transform.position == new Vector3(coord.x, transform.position.y, coord.z))
             { 
-                _Animacio.Play("Idle");
+             //   _Animacio.Play("Idle");
                 _Cami = false;
             }
             yield return new WaitForSeconds(1);
@@ -194,11 +195,11 @@ public class Enemic : MonoBehaviour, IDamageable
     {
         for (int i = 0; i < 30; i++)
         {
-            //Agafa un punt aleatori dins de l'esfera amb el radi que passem per paràmetre
+            //Agafa un punt aleatori dins de l'esfera amb el radi que passem per parï¿½metre
             Vector3 randomPoint = center + UnityEngine.Random.insideUnitSphere * range;
             NavMeshHit hit;
 
-            //Comprovem que el punt que hem agafat està dins del NavMesh
+            //Comprovem que el punt que hem agafat estï¿½ dins del NavMesh
             if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
             {
                 result = hit.position;
@@ -218,7 +219,21 @@ public class Enemic : MonoBehaviour, IDamageable
             Debug.Log(hit.collider.gameObject.name);
             if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
             {
-                nivellSo = a.atenuarSo(nivellSo);
+                Debug.Log(hit.collider.gameObject.name);
+                if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
+                {
+                    nivellSo = a.atenuarSo(nivellSo);
+                }
+            }
+            if (nivellSo >= 2)
+            {
+            _NavMeshAgent.SetDestination(pos);
+            }
+            else if (nivellSo >= 1)
+            {
+                print("a");
+                Vector3 r = new Vector3((float)UnityEngine.Random.Range(pos.x - 10, pos.x + 10), this.transform.position.y, UnityEngine.Random.Range(pos.z - 10, pos.z + 10));
+            _NavMeshAgent.SetDestination(r);
             }
         }
 
