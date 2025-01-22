@@ -1968,7 +1968,7 @@ GameObject:
   - component: {fileID: 863026887}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2079,7 +2079,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Camera: {fileID: 111326894}
   _Velocity: 8
-  _LookVelocity: 360
+  _LookVelocity: 60
   _InvertY: 0
   _UseLayerMask:
     serializedVersion: 2
@@ -3621,7 +3621,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CurrentState: 0
-  _BeforeState: 0
   _StateTime: 0
   _Detectat: 0
   _Cami: 0
@@ -3664,7 +3663,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CurrentState: 0
-  _BeforeState: 0
   _StateTime: 0
   _Detectat: 0
   _Cami: 0

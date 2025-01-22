@@ -30,6 +30,7 @@ public class Enemic : MonoBehaviour, IDamageable
     private Vector3 _PuntSo; //Punt d'on prove el so, tant jugador com objecte
     private bool _InvestigarSo;
     private bool _ActivatEspera;
+    private bool _Perseguir;
 
     private void Awake()
     {
@@ -68,6 +69,7 @@ public class Enemic : MonoBehaviour, IDamageable
             case EnemyStates.PATRULLA:
                 _Animacio.Play("Run");
                 _Detectat = false;
+                _Cami = false;
                 StartCoroutine(Patrullar());
                 break;
             case EnemyStates.INVESTIGAR:
@@ -120,7 +122,6 @@ public class Enemic : MonoBehaviour, IDamageable
                 _Detectat = true;
                 break;
             case EnemyStates.INVESTIGAR:
-                StopAllCoroutines();
                 _InvestigarSo = false;
                 _ActivatEspera = false;
                 break;
@@ -155,7 +156,7 @@ public class Enemic : MonoBehaviour, IDamageable
                     Debug.DrawRay(coord, Vector3.up, UnityEngine.Color.black, 1.0f);
                 }
                 
-                _NavMeshAgent.destination = new Vector3(coord.x, transform.position.y, coord.z);
+                _NavMeshAgent.SetDestination(new Vector3(coord.x, transform.position.y, coord.z));
                 _Cami = true;
             }
 
@@ -169,52 +170,48 @@ public class Enemic : MonoBehaviour, IDamageable
     }
 
     private void DetectarJugador()
-    {
+    {        
         Collider jugador = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
 
         if(jugador != null)
         {
             float angleVisio = Vector3.Angle(transform.forward, jugador.transform.position);
 
-            if(angleVisio <= 80f)
+            if(angleVisio <= 120f)
             {
-                RaycastHit[] a = Physics.RaycastAll(transform.forward, jugador.transform.position, 10f);
+                Collider[] a = Physics.OverlapSphere(transform.forward, 10f, Physics.AllLayers);
+                Collider jugador2 = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
 
-                if(a != null)
+                if(jugador2 != null)
                 {
-                    RaycastHit j = a.Where(x => x.collider.gameObject.layer.Equals(_LayerJugador)).FirstOrDefault();
-                
-                    if(!j.Equals(null))
+                    bool paret = false;
+                    foreach (Collider r in a) 
                     {
-
-                        bool paret = false;
-
-                        foreach (RaycastHit r in a) 
+                        Vector3 dis1 = r.transform.forward - transform.forward; //Objecte pel camí
+                        Vector3 dis2 = jugador2.transform.forward - transform.forward; //Personatge                      
+                        if (dis1.z < dis2.z)
                         {
-                            if (r.distance < j.distance)
-                            {
-                                paret = true;
-                                Debug.Log("Tinc una paret al davant!");
-                                break;
-                            }
-                        }
-
-                        if(!paret)
-                        {
-                            Debug.Log("Detecto alguna cosa aprop!");
-                            StopAllCoroutines();
-                            _NavMeshAgent.destination = _Jugador.transform.position;
-                            if(_CurrentState != EnemyStates.PERSEGUIR)
-                                ChangeState(EnemyStates.PERSEGUIR);
+                            paret = true;
+                            Debug.Log("Tinc una paret al davant!");
+                            break;
                         }
                     }
+
+                    if(!paret)
+                    {
+                        Debug.Log("Detecto alguna cosa aprop!");
+                        StopAllCoroutines();
+                        _Perseguir = true;
+                        _NavMeshAgent.SetDestination(_Jugador.transform.position);
+                        if(_CurrentState != EnemyStates.PERSEGUIR)
+                            ChangeState(EnemyStates.PERSEGUIR);
+                    } 
                 }
             }
-            else
+            else if(_Perseguir)
             {
-                Debug.Log("No detecto res!");
-                if(_CurrentState == EnemyStates.PERSEGUIR)
-                    ChangeState(EnemyStates.INVESTIGAR);
+                StartCoroutine(AcabarPerseguir());
+                _NavMeshAgent.SetDestination(_Jugador.transform.position);
             }
         }
         else
@@ -223,6 +220,7 @@ public class Enemic : MonoBehaviour, IDamageable
             if (_CurrentState == EnemyStates.PERSEGUIR)
                 ChangeState(EnemyStates.INVESTIGAR);
         }
+        
     }
 
     IEnumerator Investigar()
@@ -234,7 +232,7 @@ public class Enemic : MonoBehaviour, IDamageable
                 if (!_ActivatEspera)
                 {
                     _ActivatEspera = true;
-                    StartCoroutine(EsperarCanvi(10)); //Temps d'espera per canviar a patrulla (te posat un chage a patrulla)
+                    StartCoroutine(EsperarCanvi()); //Temps d'espera per canviar a patrulla (te posat un chage a patrulla)
                 }
                 _Animacio.Play("Idle");
                 yield return new WaitForSeconds(2.5f);
@@ -290,7 +288,7 @@ public class Enemic : MonoBehaviour, IDamageable
                 _NavMeshAgent.SetDestination(r);
             }*/
 
-            if (nivellSo == 1)
+            if (nivellSo >= 1)
             {
                 if (_CurrentState == EnemyStates.INVESTIGAR)
                     _NavMeshAgent.SetDestination(_PuntSo);
@@ -310,12 +308,19 @@ public class Enemic : MonoBehaviour, IDamageable
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, 10f);
+        Gizmos.DrawWireSphere(transform.position, 20f);
     }
 
-    IEnumerator EsperarCanvi(int n)
+    IEnumerator EsperarCanvi()
     {
-        yield return new WaitForSeconds(n);
+        yield return new WaitForSeconds(10);
+        _Animacio.Play("Idle");
         ChangeState(EnemyStates.PATRULLA);
+    }
+
+    IEnumerator AcabarPerseguir()
+    {
+        yield return new WaitForSeconds(2);
+        _Perseguir = false;
     }
 }
