@@ -141,6 +141,10 @@ public class Enemic : MonoBehaviour, IDamageable
     private void Update()
     {
         UpdateState(_CurrentState);
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/hector
     }
 
     IEnumerator Patrullar()
@@ -301,6 +305,7 @@ public class Enemic : MonoBehaviour, IDamageable
             }
         }        
     }
+<<<<<<< HEAD
 
     public void RebreMal(float damage)
     {
@@ -324,4 +329,6 @@ public class Enemic : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(2);
         _Perseguir = false;
     }
+=======
+>>>>>>> origin/hector
 }
