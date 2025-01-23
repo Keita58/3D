@@ -3567,11 +3567,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   _Jugador: {fileID: 863026881}
-  _PuntsMapa:
-  - {fileID: 1806383455}
-  _Camera: {fileID: 111326894}
-  _InvertY: 1
-  _LookVelocity: 180
+  _PuntsMapa: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

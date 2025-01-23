@@ -28,6 +28,7 @@ public class Enemic : MonoBehaviour, IDamageable
     //private Animator _Animacio;
     private InputSystem_Actions _InputActions;
     private InputAction _MoveAction;
+    RaycastHit[] hits;
 
     private void Awake()
     {
@@ -65,6 +66,7 @@ public class Enemic : MonoBehaviour, IDamageable
             case EnemyStates.PATRULLA:
              //   _Animacio.Play("Run");
                 _Detectat = false;
+                _Cami = false;
                 StartCoroutine(Patrullar());
                 break;
             case EnemyStates.INVESTIGAR:
@@ -132,6 +134,7 @@ public class Enemic : MonoBehaviour, IDamageable
         {
             case EnemyStates.PATRULLA:
                 _Detectat = true;
+                _Cami = false;
                 break;
             case EnemyStates.INVESTIGAR:
             case EnemyStates.PERSEGUIR:
@@ -211,7 +214,7 @@ public class Enemic : MonoBehaviour, IDamageable
     public void Escuchar(Vector3 pos, int nivellSo)
     {
             hits = Physics.RaycastAll(this.transform.position, pos - this.transform.position, Vector3.Distance(pos, this.transform.position));
-            Debug.DrawLine(this.transform.position, pos - this.transform.position, Color.red, 10f);
+            Debug.DrawLine(this.transform.position, pos - this.transform.position, UnityEngine.Color.red, 10f);
             foreach (RaycastHit hit in hits)
             {
                 Debug.Log(hit.collider.gameObject.name);
