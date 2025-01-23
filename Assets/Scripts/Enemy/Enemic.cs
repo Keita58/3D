@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -17,24 +18,24 @@ public class Enemic : MonoBehaviour, IDamageable
     [SerializeField] private bool _Detectat;
     [SerializeField] private bool _Cami;
     [SerializeField] private bool _AtacarBoolean;
-    [SerializeField] private Collider[] _DetectarCollider;
+    [SerializeField] private Collider _DetectarCollider;
     [SerializeField] private LayerMask _LayerJugador;
     [SerializeField] private GameObject _Jugador;
-    [SerializeField] private GameObject[] _PuntsMapa;
 
     private NavMeshAgent _NavMeshAgent;
     private Collider[] _Atacar;
     private System.Random _Random;
-    //private Animator _Animacio;
+    private Animator _Animacio;
     private InputSystem_Actions _InputActions;
-    private InputAction _MoveAction;
-    RaycastHit[] hits;
+    private Vector3 _PuntSo; //Punt d'on prove el so, tant jugador com objecte
+    private bool _InvestigarSo;
+    private bool _ActivatEspera;
+    private bool _Perseguir;
 
     private void Awake()
     {
         _InputActions = new InputSystem_Actions();
-        _MoveAction = _InputActions.Player.Move;
-     //   _Animacio = GetComponent<Animator>();
+        _Animacio = GetComponent<Animator>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
         _InputActions.Player.Enable();
@@ -45,6 +46,8 @@ public class Enemic : MonoBehaviour, IDamageable
         _Random = new System.Random();
         InitState(EnemyStates.PATRULLA);
         Cursor.lockState = CursorLockMode.Locked;
+        _InvestigarSo = false;
+        _ActivatEspera = false;
     }
 
     private void ChangeState(EnemyStates newState)
@@ -64,16 +67,18 @@ public class Enemic : MonoBehaviour, IDamageable
         switch (_CurrentState)
         {
             case EnemyStates.PATRULLA:
-             //   _Animacio.Play("Run");
+                _Animacio.Play("Run");
                 _Detectat = false;
                 _Cami = false;
                 StartCoroutine(Patrullar());
                 break;
             case EnemyStates.INVESTIGAR:
-               // _Animacio.Play("Run");
+                _Animacio.Play("Run");
+                _InvestigarSo = true;
+                StartCoroutine(Investigar());
                 break;
             case EnemyStates.PERSEGUIR:
-                //_Animacio.Play("Run");
+                _Animacio.Play("Run");
                 break;
             case EnemyStates.ATACAR:
                 break;
@@ -91,33 +96,14 @@ public class Enemic : MonoBehaviour, IDamageable
 
         switch (updateState)
         {
+            case EnemyStates.PATRULLA:
+                DetectarJugador();
+                break;
             case EnemyStates.INVESTIGAR:
-                _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
-                
-                if (_DetectarCollider.Length > 0)
-                {
-                    Debug.Log("Detecto alguna cosa aprop!");
-                    _NavMeshAgent.destination = _Jugador.transform.position;
-                    ChangeState(EnemyStates.PERSEGUIR);
-                }
-                
+                DetectarJugador();
                 break;
             case EnemyStates.PERSEGUIR:
-                _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
-                _Atacar = Physics.OverlapSphere(transform.position, 5f, _LayerJugador);
-
-                if (_DetectarCollider.Length > 0)
-                {
-                    Debug.Log("Detecto alguna cosa aprop!");
-                    _NavMeshAgent.destination = _Jugador.transform.position;
-                }
-                else
-                {
-                    ChangeState(EnemyStates.PATRULLA);
-                    Debug.Log("No detecto res!");
-                    _NavMeshAgent.destination = transform.position;
-                    ChangeState(EnemyStates.PATRULLA);
-                }
+                DetectarJugador();
                 break;
             case EnemyStates.ATACAR:
                 break;
@@ -137,6 +123,9 @@ public class Enemic : MonoBehaviour, IDamageable
                 _Cami = false;
                 break;
             case EnemyStates.INVESTIGAR:
+                _InvestigarSo = false;
+                _ActivatEspera = false;
+                break;
             case EnemyStates.PERSEGUIR:
                 break;
             case EnemyStates.ATACAR:
@@ -162,32 +151,98 @@ public class Enemic : MonoBehaviour, IDamageable
         {
             if (!_Cami)
             {
-              //  _Animacio.Play("Run");
+                _Animacio.Play("Run");
                 if (RandomPoint(transform.position, range, out coord))
                 {
                     Debug.DrawRay(coord, Vector3.up, UnityEngine.Color.black, 1.0f);
                 }
-                Debug.Log(coord);
-                _NavMeshAgent.destination = new Vector3(coord.x, transform.position.y, coord.z);
+                
+                _NavMeshAgent.SetDestination(new Vector3(coord.x, transform.position.y, coord.z));
                 _Cami = true;
             }
 
             if (transform.position == new Vector3(coord.x, transform.position.y, coord.z))
             { 
-             //   _Animacio.Play("Idle");
+                _Animacio.Play("Idle");
                 _Cami = false;
             }
-
-            _DetectarCollider = Physics.OverlapSphere(transform.position, 10f, _LayerJugador);
-
-            if (_DetectarCollider.Length > 0)
-            {
-                ChangeState(EnemyStates.INVESTIGAR);
-                _Detectat = true;
-                _Cami = false;
-            }
-
             yield return new WaitForSeconds(1);
+        }
+    }
+
+    private void DetectarJugador()
+    {        
+        Collider jugador = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
+
+        if(jugador != null)
+        {
+            float angleVisio = Vector3.Angle(transform.forward, jugador.transform.position);
+
+            if(angleVisio <= 120f)
+            {
+                Collider[] a = Physics.OverlapSphere(transform.forward, 10f, Physics.AllLayers);
+                Collider jugador2 = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
+
+                if(jugador2 != null)
+                {
+                    bool paret = false;
+                    foreach (Collider r in a) 
+                    {
+                        Vector3 dis1 = r.transform.forward - transform.forward; //Objecte pel camí
+                        Vector3 dis2 = jugador2.transform.forward - transform.forward; //Personatge                      
+                        if (dis1.z < dis2.z)
+                        {
+                            paret = true;
+                            Debug.Log("Tinc una paret al davant!");
+                            break;
+                        }
+                    }
+
+                    if(!paret)
+                    {
+                        Debug.Log("Detecto alguna cosa aprop!");
+                        StopAllCoroutines();
+                        _Perseguir = true;
+                        _NavMeshAgent.SetDestination(_Jugador.transform.position);
+                        if(_CurrentState != EnemyStates.PERSEGUIR)
+                            ChangeState(EnemyStates.PERSEGUIR);
+                    } 
+                }
+            }
+            else if(_Perseguir)
+            {
+                StartCoroutine(AcabarPerseguir());
+                _NavMeshAgent.SetDestination(_Jugador.transform.position);
+            }
+        }
+        else
+        {
+            Debug.Log("No detecto res a la meva mirada!");
+            if (_CurrentState == EnemyStates.PERSEGUIR)
+                ChangeState(EnemyStates.INVESTIGAR);
+        }
+        
+    }
+
+    IEnumerator Investigar()
+    {
+        while(_InvestigarSo)
+        {
+            if (transform.position == _NavMeshAgent.destination)
+            {
+                if (!_ActivatEspera)
+                {
+                    _ActivatEspera = true;
+                    StartCoroutine(EsperarCanvi()); //Temps d'espera per canviar a patrulla (te posat un chage a patrulla)
+                }
+                _Animacio.Play("Idle");
+                yield return new WaitForSeconds(2.5f);
+                _Animacio.Play("Run");
+                RandomPoint(_PuntSo, 5f, out Vector3 hit);
+                _NavMeshAgent.destination = hit;
+            }
+            else
+                yield return new WaitForSeconds(1f);
         }
     }
 
@@ -200,7 +255,7 @@ public class Enemic : MonoBehaviour, IDamageable
             Vector3 randomPoint = center + UnityEngine.Random.insideUnitSphere * range;
             NavMeshHit hit;
 
-            //Comprovem que el punt que hem agafat est� dins del NavMesh
+            //Comprovem que el punt que hem agafat esta dins del NavMesh
             if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
             {
                 result = hit.position;
@@ -213,26 +268,38 @@ public class Enemic : MonoBehaviour, IDamageable
 
     public void Escuchar(Vector3 pos, int nivellSo)
     {
-            hits = Physics.RaycastAll(this.transform.position, pos - this.transform.position, Vector3.Distance(pos, this.transform.position));
-            Debug.DrawLine(this.transform.position, pos - this.transform.position, UnityEngine.Color.red, 10f);
-            foreach (RaycastHit hit in hits)
+        _PuntSo = pos;
+        RaycastHit[] hits = Physics.RaycastAll(this.transform.position, _PuntSo - this.transform.position, Vector3.Distance(_PuntSo, this.transform.position));
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
             {
-                Debug.Log(hit.collider.gameObject.name);
-                if (hit.collider.TryGetComponent<IAtenuacio>(out IAtenuacio a))
-                {
-                    nivellSo = a.atenuarSo(nivellSo);
-                }
+                nivellSo = a.atenuarSo(nivellSo);
             }
+
+            /*
             if (nivellSo >= 2)
             {
-            _NavMeshAgent.SetDestination(pos);
+                _NavMeshAgent.SetDestination(pos);
             }
             else if (nivellSo >= 1)
             {
                 print("a");
                 Vector3 r = new Vector3((float)UnityEngine.Random.Range(pos.x - 10, pos.x + 10), this.transform.position.y, UnityEngine.Random.Range(pos.z - 10, pos.z + 10));
-            _NavMeshAgent.SetDestination(r);
+                _NavMeshAgent.SetDestination(r);
+            }*/
+
+            if (nivellSo >= 1)
+            {
+                if (_CurrentState == EnemyStates.INVESTIGAR)
+                    _NavMeshAgent.SetDestination(_PuntSo);
+                else if (_CurrentState == EnemyStates.PATRULLA)
+                {
+                    RandomPoint(_PuntSo, 5f, out _);
+                    ChangeState(EnemyStates.INVESTIGAR);
+                }
             }
+        }        
     }
 
     public void RebreMal(float damage)
@@ -240,4 +307,21 @@ public class Enemic : MonoBehaviour, IDamageable
         throw new NotImplementedException();
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, 20f);
+    }
+
+    IEnumerator EsperarCanvi()
+    {
+        yield return new WaitForSeconds(10);
+        _Animacio.Play("Idle");
+        ChangeState(EnemyStates.PATRULLA);
+    }
+
+    IEnumerator AcabarPerseguir()
+    {
+        yield return new WaitForSeconds(2);
+        _Perseguir = false;
+    }
 }

@@ -28,7 +28,7 @@ public class PlayerComponent : MonoBehaviour
     [SerializeField] private bool _InvertY = true;
     private Vector2 _LookRotation = Vector2.zero;
 
-    [SerializeField] private LayerMask _UseLayerMask;
+    //[SerializeField] private LayerMask _UseLayerMask;
 
     public event Action<Vector3> OnSetDestination;
 
@@ -76,7 +76,7 @@ public class PlayerComponent : MonoBehaviour
     {
         //Moviment
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
-        print(movementInput);
+        //print(movementInput);
         if ((movementInput.x != 0 || movementInput.y != 0))
         {
             if (!a)
