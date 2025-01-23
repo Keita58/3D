@@ -120,7 +120,6 @@ public class Enemic : MonoBehaviour, IDamageable
         {
             case EnemyStates.PATRULLA:
                 _Detectat = true;
-                _Cami = false;
                 break;
             case EnemyStates.INVESTIGAR:
                 _InvestigarSo = false;
@@ -141,10 +140,6 @@ public class Enemic : MonoBehaviour, IDamageable
     private void Update()
     {
         UpdateState(_CurrentState);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/hector
     }
 
     IEnumerator Patrullar()
@@ -160,13 +155,13 @@ public class Enemic : MonoBehaviour, IDamageable
                 {
                     Debug.DrawRay(coord, Vector3.up, UnityEngine.Color.black, 1.0f);
                 }
-                
+
                 _NavMeshAgent.SetDestination(new Vector3(coord.x, transform.position.y, coord.z));
                 _Cami = true;
             }
 
             if (transform.position == new Vector3(coord.x, transform.position.y, coord.z))
-            { 
+            {
                 _Animacio.Play("Idle");
                 _Cami = false;
             }
@@ -175,22 +170,22 @@ public class Enemic : MonoBehaviour, IDamageable
     }
 
     private void DetectarJugador()
-    {        
+    {
         Collider jugador = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
 
-        if(jugador != null)
+        if (jugador != null)
         {
             float angleVisio = Vector3.Angle(transform.forward, jugador.transform.position);
 
-            if(angleVisio <= 120f)
+            if (angleVisio <= 120f)
             {
                 Collider[] a = Physics.OverlapSphere(transform.forward, 10f, Physics.AllLayers);
                 Collider jugador2 = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
 
-                if(jugador2 != null)
+                if (jugador2 != null)
                 {
                     bool paret = false;
-                    foreach (Collider r in a) 
+                    foreach (Collider r in a)
                     {
                         Vector3 dis1 = r.transform.forward - transform.forward; //Objecte pel camí
                         Vector3 dis2 = jugador2.transform.forward - transform.forward; //Personatge                      
@@ -202,18 +197,18 @@ public class Enemic : MonoBehaviour, IDamageable
                         }
                     }
 
-                    if(!paret)
+                    if (!paret)
                     {
                         Debug.Log("Detecto alguna cosa aprop!");
                         StopAllCoroutines();
                         _Perseguir = true;
                         _NavMeshAgent.SetDestination(_Jugador.transform.position);
-                        if(_CurrentState != EnemyStates.PERSEGUIR)
+                        if (_CurrentState != EnemyStates.PERSEGUIR)
                             ChangeState(EnemyStates.PERSEGUIR);
-                    } 
+                    }
                 }
             }
-            else if(_Perseguir)
+            else if (_Perseguir)
             {
                 StartCoroutine(AcabarPerseguir());
                 _NavMeshAgent.SetDestination(_Jugador.transform.position);
@@ -225,12 +220,12 @@ public class Enemic : MonoBehaviour, IDamageable
             if (_CurrentState == EnemyStates.PERSEGUIR)
                 ChangeState(EnemyStates.INVESTIGAR);
         }
-        
+
     }
 
     IEnumerator Investigar()
     {
-        while(_InvestigarSo)
+        while (_InvestigarSo)
         {
             if (transform.position == _NavMeshAgent.destination)
             {
@@ -303,9 +298,8 @@ public class Enemic : MonoBehaviour, IDamageable
                     ChangeState(EnemyStates.INVESTIGAR);
                 }
             }
-        }        
+        }
     }
-<<<<<<< HEAD
 
     public void RebreMal(float damage)
     {
@@ -329,6 +323,4 @@ public class Enemic : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(2);
         _Perseguir = false;
     }
-=======
->>>>>>> origin/hector
 }

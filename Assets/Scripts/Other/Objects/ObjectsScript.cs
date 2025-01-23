@@ -5,8 +5,7 @@ public class ObjectsScript : MonoBehaviour
 {
     [SerializeField]
     Sound mySound;
-    [SerializeField]
-    PlayerComponent pc;
+    [SerializeField] GameObject camaraPrimera;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -21,14 +20,17 @@ public class ObjectsScript : MonoBehaviour
     {
         
     }
-    private void OnMouseDown()
-    {
-        Lanzar();
-    }
     bool lanzado = false;
-    void Lanzar()
+    public void Lanzar()
     {
-        this.GetComponent<Rigidbody>().AddForce(pc.transform.forward.x*100, 554, pc.transform.forward.z* 100);
+        float u = 5 / this.GetComponent<Rigidbody>().mass;
+        float t = 2 * u / Physics.gravity.magnitude;
+        Vector3 AB = this.transform.position*0.5f - this.transform.position;
+        Vector3 h = AB / t;
+        Vector3 H = h * this.GetComponent<Rigidbody>().mass;
+        Vector3 F = H + 5 * Vector3.up;
+        this.GetComponent<Rigidbody>().AddForce(F, ForceMode.Impulse);
+        //this.GetComponent<Rigidbody>().AddForce(camaraPrimera.transform.forward.x*100, 554, camaraPrimera.transform.forward.z * 100, ForceMode.Impulse);
         lanzado = true;
     }
     private void OnCollisionEnter(Collision collision)
@@ -46,4 +48,5 @@ public class ObjectsScript : MonoBehaviour
             }
         }
     }
+
 }

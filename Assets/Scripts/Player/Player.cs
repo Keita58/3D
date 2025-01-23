@@ -71,7 +71,8 @@ public class Player : MonoBehaviour
         _inputActions.Player.Jump.performed += Jump;
         _inputActions.Player.Crouch.performed += Crouch;
         _inputActions.Player.CambiarCamera.performed += CambiarCamara;
-        _ScrollAction= _inputActions.Player.MouseWheel;
+        _inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
+        _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
 
         _inputActions.Player.Enable();
@@ -137,6 +138,19 @@ public class Player : MonoBehaviour
 
     private void Attack(InputAction.CallbackContext context)
     {
+        Debug.DrawRay(puntoDisparo.transform.position, puntoDisparo.transform.forward, Color.magenta, 5f);
+        Debug.Log("TIRO DEBUGRAY");
+    }
+
+    private void LanzarObjeto(InputAction.CallbackContext context)
+    {
+        if(Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hitInfo, 5f))
+        {
+            if(hitInfo.collider.gameObject.TryGetComponent<ObjectsScript>(out ObjectsScript objs))
+            {
+                objs.Lanzar();
+            }
+        }
         Debug.DrawRay(puntoDisparo.transform.position, puntoDisparo.transform.forward, Color.magenta, 5f);
         Debug.Log("TIRO DEBUGRAY");
     }
@@ -269,9 +283,9 @@ public class Player : MonoBehaviour
             Debug.Log("Mi posicion: " + this.transform.position);
             foreach (Collider collider in colliderHits)
             {
-                if (collider.gameObject.TryGetComponent<Enemy>(out Enemy en))
+                if (collider.gameObject.TryGetComponent<Enemic>(out Enemic en))
                 {
-                    en.Escuchar(this.transform.position, 1);
+                    en.Escuchar(this.transform.position, 2);
                 }
             }
             Debug.Log("Corrutina sonido");
@@ -282,7 +296,7 @@ public class Player : MonoBehaviour
     IEnumerator EmetreSORun()
     {
         Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
-        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemy>(out Enemy en))
+        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
         {
             en.Escuchar(this.transform.position, 7);
         }

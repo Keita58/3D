@@ -99,6 +99,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""LanzarObjeto"",
+                    ""type"": ""Button"",
+                    ""id"": ""982d86a2-9221-449e-8b7e-4c8db4a14cb1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -407,6 +416,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""MouseWheel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c883bec2-3fd4-4234-a1d0-5e1bbc2fbc0a"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LanzarObjeto"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1002,6 +1022,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_CambiarCamera = m_Player.FindAction("CambiarCamera", throwIfNotFound: true);
         m_Player_MouseWheel = m_Player.FindAction("MouseWheel", throwIfNotFound: true);
+        m_Player_LanzarObjeto = m_Player.FindAction("LanzarObjeto", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1089,6 +1110,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_CambiarCamera;
     private readonly InputAction m_Player_MouseWheel;
+    private readonly InputAction m_Player_LanzarObjeto;
     public struct PlayerActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1101,6 +1123,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         public InputAction @CambiarCamera => m_Wrapper.m_Player_CambiarCamera;
         public InputAction @MouseWheel => m_Wrapper.m_Player_MouseWheel;
+        public InputAction @LanzarObjeto => m_Wrapper.m_Player_LanzarObjeto;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1134,6 +1157,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @MouseWheel.started += instance.OnMouseWheel;
             @MouseWheel.performed += instance.OnMouseWheel;
             @MouseWheel.canceled += instance.OnMouseWheel;
+            @LanzarObjeto.started += instance.OnLanzarObjeto;
+            @LanzarObjeto.performed += instance.OnLanzarObjeto;
+            @LanzarObjeto.canceled += instance.OnLanzarObjeto;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1162,6 +1188,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @MouseWheel.started -= instance.OnMouseWheel;
             @MouseWheel.performed -= instance.OnMouseWheel;
             @MouseWheel.canceled -= instance.OnMouseWheel;
+            @LanzarObjeto.started -= instance.OnLanzarObjeto;
+            @LanzarObjeto.performed -= instance.OnLanzarObjeto;
+            @LanzarObjeto.canceled -= instance.OnLanzarObjeto;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1352,6 +1381,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnCrouch(InputAction.CallbackContext context);
         void OnCambiarCamera(InputAction.CallbackContext context);
         void OnMouseWheel(InputAction.CallbackContext context);
+        void OnLanzarObjeto(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
