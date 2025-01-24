@@ -23,15 +23,17 @@ public class ObjectsScript : MonoBehaviour
     bool lanzado = false;
     public void Lanzar()
     {
-        float u = 5 / this.GetComponent<Rigidbody>().mass;
-        float t = 2 * u / Physics.gravity.magnitude;
-        Vector3 AB = this.transform.position*0.5f - this.transform.position;
-        Vector3 h = AB / t;
-        Vector3 H = h * this.GetComponent<Rigidbody>().mass;
-        Vector3 F = H + 5 * Vector3.up;
-        this.GetComponent<Rigidbody>().AddForce(F, ForceMode.Impulse);
-        //this.GetComponent<Rigidbody>().AddForce(camaraPrimera.transform.forward.x*100, 554, camaraPrimera.transform.forward.z * 100, ForceMode.Impulse);
-        lanzado = true;
+        if (!lanzado)
+        {
+            float u = 5 / this.GetComponent<Rigidbody>().mass;
+            float t = 2 * u / Physics.gravity.magnitude;
+            Vector3 AB = (camaraPrimera.transform.forward + camaraPrimera.transform.forward * 4) - camaraPrimera.transform.forward;
+            Vector3 h = AB / t;
+            Vector3 H = h * this.GetComponent<Rigidbody>().mass;
+            Vector3 F = H + 8 * Vector3.up;
+            this.GetComponent<Rigidbody>().AddForce(F, ForceMode.Impulse);
+            lanzado = true;
+        }
     }
     private void OnCollisionEnter(Collision collision)
     {
