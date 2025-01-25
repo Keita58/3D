@@ -176,9 +176,10 @@ public class Enemic : MonoBehaviour, IDamageable
         if(jugador != null)
         {
             float angleVisio = Vector3.Angle(transform.forward, jugador.transform.position);
-
+            
             if(angleVisio <= 120f)
             {
+                //Raycast amb les layers de paret i player i si tenim la paret no seguim, sinó seguim el jugador
                 Collider[] a = Physics.OverlapSphere(transform.forward, 10f, Physics.AllLayers);
                 Collider jugador2 = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
 
@@ -187,8 +188,8 @@ public class Enemic : MonoBehaviour, IDamageable
                     bool paret = false;
                     foreach (Collider r in a) 
                     {
-                        Vector3 dis1 = r.transform.forward - transform.forward; //Objecte pel camí
-                        Vector3 dis2 = jugador2.transform.forward - transform.forward; //Personatge                      
+                        Vector3 dis1 = r.transform.position - transform.forward; //Objecte pel camí
+                        Vector3 dis2 = jugador2.transform.position - transform.forward; //Personatge                      
                         if (dis1.z < dis2.z)
                         {
                             paret = true;
@@ -308,7 +309,7 @@ public class Enemic : MonoBehaviour, IDamageable
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, 20f);
+        Gizmos.DrawWireSphere(transform.position, 10f);
     }
 
     IEnumerator EsperarCanvi()
