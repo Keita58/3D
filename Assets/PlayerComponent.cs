@@ -28,7 +28,7 @@ public class PlayerComponent : MonoBehaviour
     [SerializeField] private bool _InvertY = true;
     private Vector2 _LookRotation = Vector2.zero;
 
-    [SerializeField] private LayerMask _UseLayerMask;
+    //[SerializeField] private LayerMask _UseLayerMask;
 
     public event Action<Vector3> OnSetDestination;
 
@@ -47,11 +47,7 @@ public class PlayerComponent : MonoBehaviour
 
         _RigidBody = GetComponent<Rigidbody>();
     }
-    private void Start()
-    {
-        a = true;
-        StartCoroutine(EmetreSOMove());
-    }
+
     private void Update()
     {
         //C�mera
@@ -80,10 +76,14 @@ public class PlayerComponent : MonoBehaviour
     {
         //Moviment
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
-        if (movementInput.x != 0 || movementInput.y != 0)
+        //print(movementInput);
+        if ((movementInput.x != 0 || movementInput.y != 0))
         {
-            a = true;
-    //        StartCoroutine(EmetreSOMove());
+            if (!a)
+            {
+                a = true;
+                StartCoroutine(EmetreSOMove());
+            }
         }
         else
         {
@@ -96,29 +96,27 @@ public class PlayerComponent : MonoBehaviour
     }
     IEnumerator EmetreSOMove()
     {
-        while (true)
+        while (a)
         {
             Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 30);
-            Debug.Log("Mi posicion: " + this.transform.position);
             foreach (Collider collider in colliderHits)
             {
-                if (collider.gameObject.TryGetComponent<Enemy>(out Enemy en))
+                if (collider.gameObject.TryGetComponent<Enemic>(out Enemic en))
                 {
-                    en.Escuchar(this.transform.position, 1);
+                    en.Escuchar(this.transform.position, 2);
                 }
             }
-            Debug.Log("Corrutina sonido");
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(1);
         }
     }
-    IEnumerator EmetreSORun()
+    void EmetreSORun()
     {
         Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
-        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemy>(out Enemy en))
+        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
         {
             en.Escuchar(this.transform.position, 7);
         }
-        yield return new WaitForSeconds(1);
+        new WaitForSeconds(1);
     }
 
 }
