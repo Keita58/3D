@@ -1,25 +1,66 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "InventariSO", menuName = "Scriptable Objects/InventariSO")]
 public class InventariSO : ScriptableObject
 {
-    List<ItemSO> items = new List<ItemSO>();
+    [SerializeField]
+    public List<ItemSlot> items { get; private set; }
 
-    public void UsarItem(ItemSO i)
+    private void Awake()
     {
-
-        if (items.Count == 1)
-            items.Remove(i);
-        else
-            items[items.IndexOf(i)].quantitat--;
+        items = new List<ItemSlot>();
     }
 
-    public void AfegirItem(ItemSO i)
+    [Serializable]
+    public class ItemSlot
     {
-        if (items.Contains(i))
-            items[items.IndexOf(i)].quantitat++;
+        [SerializeField]
+        public Item item;
+        [SerializeField]
+        public int amount;
+
+        public ItemSlot(Item obj)
+        {
+            item = obj;
+            amount = 1;
+        }
+    }
+
+    public void UsarItem(Item usedItem)
+    {
+        ItemSlot item = GetItem(usedItem);
+        if (item == null)
+            return;
+
+        item.amount--;
+        if (item.amount<= 0)
+            items.Remove(item);
+
+    }
+
+    public void AfegirItem(Item usedItem)
+    {
+        ItemSlot item = GetItem(usedItem);
+        if (item == null) items.Add(new ItemSlot(usedItem));
         else
-            items.Add(i);
+            item.amount++;
+
+    }
+
+    private ItemSlot GetItem(Item item)
+    {
+        foreach (ItemSlot slot in items)
+        {
+            if (slot.item == item)
+            {
+                return slot;
+            }
+
+        }
+        return null;
     }
 }

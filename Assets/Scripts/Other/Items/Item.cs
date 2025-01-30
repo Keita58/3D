@@ -4,10 +4,10 @@ using UnityEngine;
 public abstract class Item : ScriptableObject
 {
     [SerializeField]
-    string itemId {  get; set; }
-    string descripcio { get; set; }
+    public string itemId {  get; set; }
+    public string descripcio { get; set; }
 
-    Sprite sprite { get; set; }
+    public Sprite sprite { get; set; }
 
     public abstract void Usar();
 }
