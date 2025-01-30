@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1567360121d0acc46a98cfc7a98decd1, type: 3}
+  m_Name: ItemSO
+  m_EditorClassIdentifier: 
+  id: 1
+  nom: Llave
+  meshRenderer: {fileID: 0}
+  meshFilter: {fileID: 0}
+  quantitat: 1
+  imatge: {fileID: 6046390031714554452, guid: d7bb1b22374ef3643a68273e41db8d5d, type: 3}

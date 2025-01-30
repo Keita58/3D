@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] Transform puntoDisparo;
     [SerializeField] GameObject pistola;
     [SerializeField] GameObject itemSlot;
+    public List<ItemSO> inventari { get; private set; }
 
     InputAction _MoveAction;
     InputAction _LookAction;
@@ -39,7 +40,7 @@ public class Player : MonoBehaviour
     Animator animator;
     CharacterController characterController;
 
-    [SerializeField] float hp = 50.0f;
+    [SerializeField] public float hp = 50.0f;
 
     float maxAngle = 45.0f;
     float minAngle = -30.0f;
@@ -80,9 +81,10 @@ public class Player : MonoBehaviour
         _inputActions.Player.CambiarCamera.performed += CambiarCamara;
         _inputActions.Player.CogerItem.performed += CogerItem;
         _ScrollAction= _inputActions.Player.MouseWheel;
-        _inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
+        //_inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
+        inventari = new List<ItemSO>();
 
 
 
@@ -98,13 +100,14 @@ public class Player : MonoBehaviour
         Debug.Log("FUNCIONA?");
         if (interactuable != null && !tengoItem)
         {
-            interactuable.transform.parent = itemSlot.transform;
-            interactuable.transform.position = itemSlot.transform.position;
-            interactuable.transform.localRotation = Quaternion.identity;
-            interactuable.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
-            interactuable=null;
-            tengoItem = true;   
+            //interactuable.transform.parent = itemSlot.transform;
+            //interactuable.transform.position = itemSlot.transform.position;
+            //interactuable.transform.localRotation = Quaternion.identity;
+            //interactuable.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            //interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
+            //interactuable=null;
+            //tengoItem = true;
+            
             Debug.Log("Entro Coger item");
         }
         
