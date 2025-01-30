@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
-{
+{/*
     [SerializeField] private GameObject inventoryCellPrefab;
     [SerializeField] private GameObject inventoryCellParent;
     private List<InventoryCell> cells;
@@ -38,5 +38,5 @@ public class Inventory : MonoBehaviour
         {
             target.AddCount(-1);
         }
-    }
+    }*/
 }

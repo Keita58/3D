@@ -1,4 +1,4 @@
-using TMPro;
+/*using TMPro;
 using UnityEngine;
 
 public class InventoryCell : MonoBehaviour
@@ -32,4 +32,4 @@ public class InventoryCell : MonoBehaviour
     {
         Destroy(currentItem);
     }
-}
+}*/

@@ -5152,15 +5152,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1269601206}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.3, y: 6.48, z: 46.8}
+  m_LocalRotation: {x: -0, y: -0.9998255, z: -0, w: -0.018682972}
+  m_LocalPosition: {x: -63.2, y: 6.48, z: -30.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2051603501}
   - {fileID: 1875107624}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -182.141, z: 0}
 --- !u!1 &1290476706
 GameObject:
   m_ObjectHideFlags: 0
@@ -6206,7 +6206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1512446336
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7405,7 +7405,7 @@ GameObject:
   - component: {fileID: 1767923252}
   - component: {fileID: 1767923251}
   m_Layer: 0
-  m_Name: Spot Light (4)
+  m_Name: LuzFalla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7922,6 +7922,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1794184791
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1794184793}
+  - component: {fileID: 1794184792}
+  m_Layer: 0
+  m_Name: TriggerFalloLuz
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1794184792
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794184791}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 15.435112, y: 1, z: 1}
+  m_Center: {x: -7.217556, y: 0, z: 0}
+--- !u!4 &1794184793
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794184791}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -39.14, y: 8.4, z: 0.24}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1806383455
 GameObject:
   m_ObjectHideFlags: 0
@@ -8072,7 +8125,7 @@ GameObject:
   - component: {fileID: 1873890415}
   - component: {fileID: 1873890414}
   m_Layer: 0
-  m_Name: Spot Light (3)
+  m_Name: Luz
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8231,7 +8284,7 @@ Light:
   serializedVersion: 11
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1673.7394
+  m_Intensity: 1673.7393
   m_Range: 23.370707
   m_SpotAngle: 85.916954
   m_InnerSpotAngle: 21.80208
@@ -8331,7 +8384,7 @@ Transform:
   m_GameObject: {fileID: 1875107623}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -19.53, y: 0.93, z: -29.81}
+  m_LocalPosition: {x: -19.5, y: 0.93, z: -61.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8432,6 +8485,7 @@ MonoBehaviour:
   _Pivot: {fileID: 1368953046}
   puntoDisparo: {fileID: 2113593334}
   pistola: {fileID: 50272486}
+  itemSlot: {fileID: 0}
   _Velocity: 3
   _LookVelocity: 48
   _InvertY: 0
@@ -8447,8 +8501,14 @@ MonoBehaviour:
     m_Bits: 1
   colliders: []
   _CameraDistance: 5
+  material: {fileID: 0}
+  tengoItem: 0
+  interactuable: {fileID: 0}
+  materialBase: {fileID: 0}
   actualState: 0
   stateTime: 0
+  e: {fileID: 2137863484}
+  luzFalla: {fileID: 1767923252}
 --- !u!23 &1875107629
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9079,7 +9139,7 @@ GameObject:
   - component: {fileID: 1955658335}
   - component: {fileID: 1955658334}
   m_Layer: 0
-  m_Name: Spot Light (1)
+  m_Name: LuzExplota
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10355,3 +10415,4 @@ SceneRoots:
   - {fileID: 1955658336}
   - {fileID: 167152986}
   - {fileID: 15483342}
+  - {fileID: 1794184793}

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.Rendering;
@@ -20,7 +21,7 @@ public class Player : MonoBehaviour
     [SerializeField] Transform puntoDisparo;
     [SerializeField] GameObject pistola;
     [SerializeField] GameObject itemSlot;
-    public List<ItemSO> inventari { get; private set; }
+   // public List<ItemSO> inventari { get; private set; }
 
     InputAction _MoveAction;
     InputAction _LookAction;
@@ -84,7 +85,7 @@ public class Player : MonoBehaviour
         //_inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
-        inventari = new List<ItemSO>();
+       // inventari = new List<ItemSO>();
 
 
 
@@ -393,6 +394,30 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, _LookRotation.x, 0);
         camaraPrimera.transform.localRotation = Quaternion.Euler(_LookRotation.y, 0, 0);
     }
-
-
+    [SerializeField]
+    Enemic e;
+    [SerializeField]
+    Light luzFalla;
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Entro");
+        if (other.name == "TriggerActivarEnemic")
+        {
+            Debug.Log("Lo hago");
+            e.GetComponent<Enemic>().enabled = true;
+            e.GetComponent<NavMeshAgent>().enabled = true;
+            e.GetComponent<Animator>().enabled = true;
+            Destroy(other.gameObject);
+        }else if(other.name == "TriggerFalloLuz")
+        {
+            float intensity = luzFalla.intensity;
+            luzFalla.intensity = Mathf.PingPong(Time.time, 4); ;
+            new WaitForSeconds(0.5f);
+            luzFalla.intensity = intensity;
+            new WaitForSeconds(0.5f);
+            luzFalla.intensity = Mathf.PingPong(Time.time, 1);
+            new WaitForSeconds(1f);
+            luzFalla.intensity = intensity;
+        }
+    }
 }
