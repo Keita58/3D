@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +19,8 @@ public class Player : MonoBehaviour
     InputSystem_Actions _inputActions;
     [SerializeField] Transform puntoDisparo;
     [SerializeField] GameObject pistola;
+    [SerializeField] GameObject itemSlot;
+    public List<ItemSO> inventari { get; private set; }
 
     InputAction _MoveAction;
     InputAction _LookAction;
@@ -36,7 +40,7 @@ public class Player : MonoBehaviour
     Animator animator;
     CharacterController characterController;
 
-    [SerializeField] float hp = 50.0f;
+    [SerializeField] public float hp = 50.0f;
 
     float maxAngle = 45.0f;
     float minAngle = -30.0f;
@@ -51,6 +55,7 @@ public class Player : MonoBehaviour
     [SerializeField] LayerMask _CameraCollisionMask;
     [SerializeField] Collider[] colliders;
     [SerializeField] private float _CameraDistance = 5f;
+    [SerializeField] Material material;
     Vector3 camaraInitialPosition;
     bool salto = false;
     bool moving=false;
@@ -59,6 +64,9 @@ public class Player : MonoBehaviour
     Vector3 localPositionCollider;
     bool agachado = false;
     bool primeraPersona = true;
+    [SerializeField] bool tengoItem=false;
+    [SerializeField] private GameObject interactuable;
+    [SerializeField] private Material materialBase;
 
 
     private void Awake()
@@ -71,15 +79,38 @@ public class Player : MonoBehaviour
         _inputActions.Player.Jump.performed += Jump;
         _inputActions.Player.Crouch.performed += Crouch;
         _inputActions.Player.CambiarCamera.performed += CambiarCamara;
-        _inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
+        _inputActions.Player.CogerItem.performed += CogerItem;
+        _ScrollAction= _inputActions.Player.MouseWheel;
+        //_inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
+        inventari = new List<ItemSO>();
+
+
 
         _inputActions.Player.Enable();
         //rb = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         camaraInitialPosition = camaraPrimera.transform.localPosition;
+    }
+
+    private void CogerItem(InputAction.CallbackContext context)
+    {
+        Debug.Log("FUNCIONA?");
+        if (interactuable != null && !tengoItem)
+        {
+            //interactuable.transform.parent = itemSlot.transform;
+            //interactuable.transform.position = itemSlot.transform.position;
+            //interactuable.transform.localRotation = Quaternion.identity;
+            //interactuable.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            //interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
+            //interactuable=null;
+            //tengoItem = true;
+            
+            Debug.Log("Entro Coger item");
+        }
+        
     }
 
     private void CambiarCamara(InputAction.CallbackContext context)
@@ -201,10 +232,28 @@ public class Player : MonoBehaviour
         {
             Debug.DrawRay(camaraPrimera.transform.position, camaraPrimera.transform.forward, Color.magenta, 5f);
             //Lanzar Raycast interactuar con el mundo.
-            if (Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hit, 100f, _InteractLayerMask))
+            
+            if (Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hit, 5f, _InteractLayerMask)
+                && !hit.collider.gameObject.Equals(interactuable))
             {
-                Debug.Log("TOCO ITEM");
+                interactuable = hit.collider.gameObject;
+                materialBase = interactuable.GetComponent<MeshRenderer>().materials[0];
+                interactuable.GetComponent<MeshRenderer>().materials = new Material[]
+                {
+                    interactuable.GetComponent<MeshRenderer>().materials[0],
+                    
+                    material
+                };
             }
+            else if (!Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hit2, 10f, _InteractLayerMask))
+            {
+                if (interactuable != null)
+                {
+                    interactuable.GetComponent<MeshRenderer>().materials = new Material[] { interactuable.GetComponent<MeshRenderer>().materials[0] };
+                    interactuable = null;
+                }
+            }
+            //Aqui puedes poner lo de "Pulsa E para coger x";
             yield return new WaitForSeconds(1f);
         }
 
@@ -247,9 +296,19 @@ public class Player : MonoBehaviour
                     vSpeed = jumpSpeed;
                     salto = false;
                 }
+                
                 Vector3 vel = (transform.right * movementInput.x +
                     transform.forward * movementInput.y).normalized * _Velocity;
 
+                if (vel == Vector3.zero)
+                {
+                    moving= false;
+                }
+                if (!moving)
+                {
+                    moving = true;
+                    StartCoroutine(EmetreSOMove());
+                }
                 vSpeed -= gravity * Time.deltaTime;
                 vel.y = vSpeed;
 
@@ -280,7 +339,6 @@ public class Player : MonoBehaviour
         while (moving)
         {
             Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 30);
-            Debug.Log("Mi posicion: " + this.transform.position);
             foreach (Collider collider in colliderHits)
             {
                 if (collider.gameObject.TryGetComponent<Enemic>(out Enemic en))
@@ -288,7 +346,6 @@ public class Player : MonoBehaviour
                     en.Escuchar(this.transform.position, 2);
                 }
             }
-            Debug.Log("Corrutina sonido");
             yield return new WaitForSeconds(3);
         }
     }
