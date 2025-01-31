@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Inventari",
+                    "type": "Button",
+                    "id": "634f24cd-ad05-4d88-bbce-2dac490e4e7b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -393,6 +402,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "CogerItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8589c0c-86fc-42bb-a792-f8dbd1a3952a",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Inventari",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

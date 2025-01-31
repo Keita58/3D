@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "InventariSO", menuName = "Scriptable Objects/InventariSO")]
+[CreateAssetMenu(fileName = "InventariSO", menuName = "Scriptable Objects/Items/Inventari")]
 public class InventariSO : ScriptableObject
 {
     [SerializeField]

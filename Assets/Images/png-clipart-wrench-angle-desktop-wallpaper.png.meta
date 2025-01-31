@@ -132,7 +132,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      png-clipart-wrench-angle-desktop-wallpaper_0: 6046390031714554452
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

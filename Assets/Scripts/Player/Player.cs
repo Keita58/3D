@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] Transform puntoDisparo;
     [SerializeField] GameObject pistola;
     [SerializeField] GameObject itemSlot;
-    public List<ItemSO> inventari { get; private set; }
+    public List<Item> inventari { get; private set; }
 
     InputAction _MoveAction;
     InputAction _LookAction;
@@ -67,6 +67,7 @@ public class Player : MonoBehaviour
     [SerializeField] bool tengoItem=false;
     [SerializeField] private GameObject interactuable;
     [SerializeField] private Material materialBase;
+    bool inventariObert = false;
 
 
     private void Awake()
@@ -81,10 +82,11 @@ public class Player : MonoBehaviour
         _inputActions.Player.CambiarCamera.performed += CambiarCamara;
         _inputActions.Player.CogerItem.performed += CogerItem;
         _ScrollAction= _inputActions.Player.MouseWheel;
+        _inputActions.Player.Inventari.performed += ObrirTancarInventari;
         //_inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
-        inventari = new List<ItemSO>();
+        inventari = new List<Item>();
 
 
 
@@ -93,6 +95,20 @@ public class Player : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         camaraInitialPosition = camaraPrimera.transform.localPosition;
+    }
+
+    private void ObrirTancarInventari(InputAction.CallbackContext context)
+    {
+        if (!inventariObert)
+        {
+            GameManager.instance.ObrirInventari(this.gameObject);
+            inventariObert = true;
+        }
+        else
+        {
+            GameManager.instance.TancarInventari();
+            inventariObert = false;
+        }
     }
 
     private void CogerItem(InputAction.CallbackContext context)
@@ -107,6 +123,7 @@ public class Player : MonoBehaviour
             //interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
             //interactuable=null;
             //tengoItem = true;
+            GameManager.instance.AfegirItem(interactuable.GetComponent<Item>());
             
             Debug.Log("Entro Coger item");
         }

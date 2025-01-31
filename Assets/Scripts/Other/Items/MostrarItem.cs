@@ -10,7 +10,9 @@ public class MostrarItem : MonoBehaviour
 
     public void Load(InventariSO.ItemSlot item)
     {
-        this.GetComponent<Image>().sprite=item.item.sprite;
+        this.GetComponent<Image>().sprite=item.item.Sprite;
         this.textQuantitat.text=item.amount.ToString();
     }
+
+    
 }
