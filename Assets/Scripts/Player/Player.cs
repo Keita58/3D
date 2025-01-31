@@ -398,26 +398,34 @@ public class Player : MonoBehaviour
     Enemic e;
     [SerializeField]
     Light luzFalla;
+    [SerializeField]
+    AudioClip luzFallaAudio;
+    [SerializeField]
+    Light luzExplota;
+    [SerializeField]
+    AudioClip luzExplotaAudio;
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Entro");
         if (other.name == "TriggerActivarEnemic")
         {
-            Debug.Log("Lo hago");
             e.GetComponent<Enemic>().enabled = true;
             e.GetComponent<NavMeshAgent>().enabled = true;
             e.GetComponent<Animator>().enabled = true;
             Destroy(other.gameObject);
         }else if(other.name == "TriggerFalloLuz")
         {
-            float intensity = luzFalla.intensity;
-            luzFalla.intensity = Mathf.PingPong(Time.time, 4); ;
-            new WaitForSeconds(0.5f);
-            luzFalla.intensity = intensity;
-            new WaitForSeconds(0.5f);
-            luzFalla.intensity = Mathf.PingPong(Time.time, 1);
-            new WaitForSeconds(1f);
-            luzFalla.intensity = intensity;
+            luzFalla.GetComponent<AudioSource>().clip = luzFallaAudio;
+            luzFalla.GetComponent<AudioSource>().Play();
+            luzFalla.GetComponent<Animator>().Play("FalloLuz");
+            Destroy(other.gameObject);
+        }
+        else if (other.name == "TriggerLuzExplota")
+        {
+            luzFalla.GetComponent<AudioSource>().clip = luzExplotaAudio;
+            luzFalla.GetComponent<AudioSource>().Play();
+            Destroy(luzExplota.gameObject);
+            Destroy(other.gameObject);
         }
     }
 }
