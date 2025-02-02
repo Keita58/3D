@@ -123,8 +123,10 @@ public class Player : MonoBehaviour
             //interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
             //interactuable=null;
             //tengoItem = true;
-            GameManager.instance.AfegirItem(interactuable.GetComponent<Item>());
-            
+            GameManager.instance.AfegirItem(interactuable.GetComponent<CogerItem>().item);
+            Debug.Log("QUE COJO?"+interactuable.GetComponent<CogerItem>().item);
+
+
             Debug.Log("Entro Coger item");
         }
         

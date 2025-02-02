@@ -8,7 +8,7 @@ using UnityEngine;
 public class InventariSO : ScriptableObject
 {
     [SerializeField]
-    public List<ItemSlot> items { get; private set; }
+    public List<ItemSlot> items;
 
     private void Awake()
     {

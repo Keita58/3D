@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93a2625516f24b447be9ad1d9f42861e, type: 3}
-  m_Name: Item - Healing
+  m_Script: {fileID: 11500000, guid: 6def871b41b14a243806b2681e8dda7f, type: 3}
+  m_Name: KEY
   m_EditorClassIdentifier: 
-  nom: Planta
-  descripcio: Muy bonita
-  sprite: {fileID: -363907070, guid: debcdf3ecf4ad604e8ae23bb2d5d6a8c, type: 3}
-  healing: 20
+  nom: Key
+  descripcio: 2222
+  sprite: {fileID: 1321095264, guid: f282ca80c2ba11c41b71183e1089ce1d, type: 3}

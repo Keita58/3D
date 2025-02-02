@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using static InventariSO;
 
 public class MostrarInventari : MonoBehaviour
 {
@@ -17,21 +16,31 @@ public class MostrarInventari : MonoBehaviour
 
     private void Start()
     {
-        Mostrar();
+        //Mostrar();
     }
     public void Mostrar()
     {
+        Amagar();
+        
         parentGameObject.transform.parent.gameObject.SetActive(true);
-        foreach (InventariSO.ItemSlot itemSlot in inventari.items)
+        int i = 0;
+        for (i = 0; i < inventari.items.Count; i++)
         {
-            GameObject displayedItem = Instantiate(itemPrefab,parentGameObject.transform);
-            displayedItem.GetComponent<MostrarItem>().Load(itemSlot);
+            GameObject displayedItem = Instantiate(itemPrefab, parentGameObject.transform.GetChild(i).transform);
+            displayedItem.GetComponent<MostrarItem>().Load(inventari.items[i]);
         }
     }
 
     public void Amagar()
     {
         parentGameObject.transform.parent.gameObject.SetActive(false);
+        foreach (Transform child in parentGameObject.transform)
+        {
+            for (int i = 0; i < child.childCount; i++)
+            {
+                Destroy(child.GetChild(i).gameObject);
+            }
+        }
     }
 
 
