@@ -37,4 +37,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("Player usa item de curación");
         inventari.UsarItem(item);
     }
+
+    public void UsarItemKey(Item item)
+    {
+        inventari.UsarItem(item);
+    }
 }
