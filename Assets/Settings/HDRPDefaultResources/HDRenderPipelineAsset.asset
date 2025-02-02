@@ -53,7 +53,7 @@ MonoBehaviour:
     colorBufferFormat: 74
     supportCustomPass: 1
     customBufferFormat: 12
-    supportedLitShaderMode: 2
+    supportedLitShaderMode: 3
     planarReflectionResolution:
       m_Values: 000100000004000000080000
       m_SchemaId:
@@ -105,7 +105,7 @@ MonoBehaviour:
       skyReflectionSize: 256
       skyLightingOverrideLayerMask:
         serializedVersion: 2
-        m_Bits: 0
+        m_Bits: 4294967295
       supportFabricConvolution: 0
       maxDirectionalLightsOnScreen: 16
       maxPunctualLightsOnScreen: 512
@@ -115,7 +115,7 @@ MonoBehaviour:
       maxDecalsOnScreen: 512
       maxLightsPerClusterCell: 8
       maxLocalVolumetricFogSize: 32
-      maxLocalVolumetricFogOnScreen: 64
+      maxLocalVolumetricFogOnScreen: 104
     hdShadowInitParams:
       maxShadowRequests: 128
       directionalShadowsDepthBits: 32
