@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
 
     public void UsarRecarregaBales(int numBales, Item item)
     {
+        player.RecarregaBales(numBales);
         Debug.Log("Player recarrega les bales");
         inventari.UsarItem(item);
     }

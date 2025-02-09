@@ -82,6 +82,7 @@ public class Enemic : MonoBehaviour, IDamageable
             case EnemyStates.ATACAR:
                 break;
             case EnemyStates.NOQUEJAT:
+                _Animacio.Play("Idle");
                 _NavMeshAgent.destination = transform.position;
                 break;
             default:
@@ -96,11 +97,7 @@ public class Enemic : MonoBehaviour, IDamageable
         switch (updateState)
         {
             case EnemyStates.PATRULLA:
-                DetectarJugador();
-                break;
             case EnemyStates.INVESTIGAR:
-                DetectarJugador();
-                break;
             case EnemyStates.PERSEGUIR:
                 DetectarJugador();
                 break;
@@ -303,7 +300,9 @@ public class Enemic : MonoBehaviour, IDamageable
 
     public void RebreMal(float damage)
     {
-        throw new NotImplementedException();
+        // Aquí posaríem el mal a l'enemic
+        ChangeState(EnemyStates.NOQUEJAT);
+        StartCoroutine(SurtNoqueig());
     }
 
     private void OnDrawGizmos()
@@ -322,5 +321,11 @@ public class Enemic : MonoBehaviour, IDamageable
     {
         yield return new WaitForSeconds(2);
         _Perseguir = false;
+    }
+
+    IEnumerator SurtNoqueig()
+    {
+        yield return new WaitForSeconds(3);
+        ChangeState(EnemyStates.PATRULLA);
     }
 }

@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
     float minDistanceCamera = 3f;
     float maxDistancecamera = 7f;
 
-    [SerializeField] LayerMask layerMask;
+    [SerializeField] LayerMask _LayerEnemic;
     [SerializeField] LayerMask _InteractLayerMask;
     [SerializeField] LayerMask _CameraCollisionMask;
     [SerializeField] Collider[] colliders;
@@ -72,6 +72,7 @@ public class Player : MonoBehaviour
     bool inventariObert = false;
     bool corriendo = false;
     bool empezarCorrutinaCorrer = false;
+    private int _Bales;
 
 
     private void Awake()
@@ -92,7 +93,7 @@ public class Player : MonoBehaviour
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
         inventari = new List<Item>();
-
+        _Bales = 0;
 
 
         _inputActions.Player.Enable();
@@ -135,10 +136,15 @@ public class Player : MonoBehaviour
             GameManager.instance.AfegirItem(interactuable.GetComponent<CogerItem>().item);
             Debug.Log("QUE COJO?"+interactuable.GetComponent<CogerItem>().item);
 
-
             Debug.Log("Entro Coger item");
         }
         
+    }
+
+    public void RecarregaBales(int bales)
+    {
+        _Bales += bales;
+        Debug.Log("Bales del jugador: " + _Bales);
     }
 
     private void CambiarCamara(InputAction.CallbackContext context)
@@ -197,8 +203,16 @@ public class Player : MonoBehaviour
 
     private void Attack(InputAction.CallbackContext context)
     {
-        Debug.DrawRay(puntoDisparo.transform.position, puntoDisparo.transform.forward, Color.magenta, 5f);
-        Debug.Log("TIRO DEBUGRAY");
+        if(_Bales >= 1)
+        {
+            Debug.DrawRay(puntoDisparo.transform.position, puntoDisparo.transform.forward, Color.magenta, 5f);
+            Debug.Log("TIRO DEBUGRAY");
+            if(Physics.Raycast(puntoDisparo.transform.position, puntoDisparo.transform.forward, _LayerEnemic))
+            {
+                e.RebreMal(5);
+            }
+            _Bales--;
+        }
     }
 
     private void LanzarObjeto(InputAction.CallbackContext context)

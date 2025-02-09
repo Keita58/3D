@@ -13,11 +13,11 @@ public class AmmunitionItem : Item
     public override Sprite Sprite => sprite;
 
     [Header("Specific values")]
-    [SerializeField] private int bales;
+    [SerializeField] public int bales;
 
 
     public override void Usar()
     {
-        GameManager.instance.UsarItemCuracio(bales, this);
+        GameManager.instance.UsarRecarregaBales(bales, this);
     }
 }
