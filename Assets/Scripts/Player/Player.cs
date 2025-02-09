@@ -70,8 +70,8 @@ public class Player : MonoBehaviour
     [SerializeField] private Material materialBase;
     bool inventariObert = false;
     bool corriendo = false;
-    bool empezarCorrutinaCorrer = false;
-
+    public event Action onInteractuable;
+    public event Action onNotInteractuable;
 
     private void Awake()
     {
@@ -271,6 +271,7 @@ public class Player : MonoBehaviour
                     
                     material
                 };
+                onInteractuable?.Invoke();
             }
             else if (!Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hit2, 10f, _InteractLayerMask))
             {
@@ -279,6 +280,7 @@ public class Player : MonoBehaviour
                     interactuable.GetComponent<MeshRenderer>().materials = new Material[] { interactuable.GetComponent<MeshRenderer>().materials[0] };
                     interactuable = null;
                 }
+                onNotInteractuable?.Invoke();
             }
             //Aqui puedes poner lo de "Pulsa E para coger x";
             yield return new WaitForSeconds(0.5f);
