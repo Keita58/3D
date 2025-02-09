@@ -16,7 +16,7 @@ public class MostrarInventari : MonoBehaviour
 
     private void Start()
     {
-        //Mostrar();
+        
     }
     public void Mostrar()
     {
@@ -28,6 +28,7 @@ public class MostrarInventari : MonoBehaviour
         {
             GameObject displayedItem = Instantiate(itemPrefab, parentGameObject.transform.GetChild(i).transform);
             displayedItem.GetComponent<MostrarItem>().Load(inventari.items[i]);
+            displayedItem.GetComponent<MostrarItem>().OnUsarItem += Mostrar;
         }
     }
 

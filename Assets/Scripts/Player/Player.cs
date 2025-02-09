@@ -26,11 +26,12 @@ public class Player : MonoBehaviour
     InputAction _MoveAction;
     InputAction _LookAction;
     InputAction _ScrollAction;
+    InputAction _RunAction;
     //Rigidbody rb;
 
     [Tooltip("Velocitat de moviment del jugador.")]
-    [Range(0.1f, 20f)]
-    [SerializeField] private float _Velocity = 3;
+    [SerializeField] private float _VelocityRun = 6f;
+    [SerializeField] private float _VelocityMove = 3f;
 
     [Tooltip("Velocitat de mouse en graus per segon.")]
     [Range(10f, 360f)]
@@ -69,6 +70,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject interactuable;
     [SerializeField] private Material materialBase;
     bool inventariObert = false;
+    bool corriendo = false;
+    bool empezarCorrutinaCorrer = false;
 
 
     private void Awake()
@@ -85,6 +88,7 @@ public class Player : MonoBehaviour
         _ScrollAction= _inputActions.Player.MouseWheel;
         _inputActions.Player.Inventari.performed += ObrirTancarInventari;
         //_inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
+        _RunAction= _inputActions.Player.Run;
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
         inventari = new List<Item>();
@@ -112,18 +116,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void EquiparItem(GameObject itemAEquipar)
+    {
+        if (!tengoItem)
+        {
+            GameObject equipo = Instantiate(itemAEquipar, itemSlot.transform);
+            itemAEquipar.transform.position = itemSlot.transform.position;
+            tengoItem = true;
+        }
+    }
+
     private void CogerItem(InputAction.CallbackContext context)
     {
         Debug.Log("FUNCIONA?");
-        if (interactuable != null && !tengoItem)
+        if (interactuable != null)
         {
-            //interactuable.transform.parent = itemSlot.transform;
-            //interactuable.transform.position = itemSlot.transform.position;
-            //interactuable.transform.localRotation = Quaternion.identity;
-            //interactuable.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            //interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
-            //interactuable=null;
-            //tengoItem = true;
+     
             GameManager.instance.AfegirItem(interactuable.GetComponent<CogerItem>().item);
             Debug.Log("QUE COJO?"+interactuable.GetComponent<CogerItem>().item);
 
@@ -159,7 +167,7 @@ public class Player : MonoBehaviour
             float centerCharacterController =this.characterController.center.y;
             centerCharacterController = 1f;
             agachado = true;
-            _Velocity /= 2;
+            _VelocityRun /= 2;
         }
         else
         {
@@ -174,7 +182,7 @@ public class Player : MonoBehaviour
             characterController.enabled = false;
             characterController.enabled=true;
             agachado = false;
-            _Velocity *= 2;
+            _VelocityRun *= 2;
         }
     }
 
@@ -206,7 +214,7 @@ public class Player : MonoBehaviour
         Debug.Log("TIRO DEBUGRAY");
     }
 
-    enum PlayerStates { MOVE, RUN, HURT }
+    enum PlayerStates { MOVE, RUN, HURT, RUNMOVE }
     [SerializeField] PlayerStates actualState;
     [SerializeField] float stateTime;
 
@@ -297,6 +305,10 @@ public class Player : MonoBehaviour
                 moving = true;
                 StartCoroutine(EmetreSOMove());
                 break;
+            case PlayerStates.RUN:
+                corriendo = true;
+                StartCoroutine(EmetreSORun());
+                break;
             default:
                 break;
         }
@@ -307,18 +319,17 @@ public class Player : MonoBehaviour
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
 
         stateTime += Time.deltaTime;
-
         switch (actualState)
         {
+            
             case PlayerStates.MOVE:
                 if (salto)
                 {
                     vSpeed = jumpSpeed;
                     salto = false;
                 }
-                
                 Vector3 vel = (transform.right * movementInput.x +
-                    transform.forward * movementInput.y).normalized * _Velocity;
+                    transform.forward * movementInput.y).normalized * _VelocityMove;
 
                 if (vel == Vector3.zero)
                 {
@@ -329,12 +340,36 @@ public class Player : MonoBehaviour
                     moving = true;
                     StartCoroutine(EmetreSOMove());
                 }
+                if (_RunAction.IsPressed())
+                {
+                    ChangeState(PlayerStates.RUN);
+                    Debug.Log("ENTRO");
+                }
                 vSpeed -= gravity * Time.deltaTime;
                 vel.y = vSpeed;
 
                 characterController.Move(vel * Time.deltaTime);
 
                 break;
+            case PlayerStates.RUN:
+                if (salto)
+                {
+                    vSpeed = jumpSpeed;
+                    salto = false;
+                }
+                Vector3 velRun = (transform.right * movementInput.x +
+                    transform.forward * movementInput.y).normalized * _VelocityRun;
+
+                if (velRun == Vector3.zero || !_RunAction.IsPressed())
+                {
+                    ChangeState(PlayerStates.MOVE);
+                }
+                vSpeed -= gravity * Time.deltaTime;
+                velRun.y = vSpeed;
+
+                characterController.Move(velRun * Time.deltaTime);
+                break;
+
         }
 
     }
@@ -348,6 +383,9 @@ public class Player : MonoBehaviour
                 //rb.linearVelocity = Vector2.zero;
                 //rb.angularVelocity = Vector3.zero;
                 moving=false;
+                break;
+            case PlayerStates.RUN:
+                corriendo=false;
                 break;
             default:
                 break;
@@ -372,12 +410,15 @@ public class Player : MonoBehaviour
 
     IEnumerator EmetreSORun()
     {
-        Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
-        if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
+        while (corriendo)
         {
-            en.Escuchar(this.transform.position, 7);
+            Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 7);
+            if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
+            {
+                en.Escuchar(this.transform.position, 7);
+            }
+            yield return new WaitForSeconds(1);
         }
-        yield return new WaitForSeconds(1);
     }
 
     public void MovimentCamera()

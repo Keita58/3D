@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     public void UsarItemCuracio(int curacion, Item item)
     {
         player.hp+=curacion;
-        Debug.Log("Player usa item de curación");
+        Debug.Log("Player usa item de curaciï¿½n");
         inventari.UsarItem(item);
     }
 
@@ -42,5 +42,15 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Player recarrega les bales");
         inventari.UsarItem(item);
+    }
+    public void UsarItemKey(Item item)
+    {
+        inventari.UsarItem(item);
+    }
+
+    public void UsarItemThrowable(Item item, GameObject objeto)
+    {
+        inventari.UsarItem(item);
+        player.EquiparItem(objeto);
     }
 }
