@@ -73,6 +73,7 @@ public class Player : MonoBehaviour
     bool corriendo = false;
     bool empezarCorrutinaCorrer = false;
     public int _Bales { get; private set; }
+    GameObject objetoEquipado;
 
     public event Action onInteractuable;
     public event Action onNotInteractuable;
@@ -91,7 +92,7 @@ public class Player : MonoBehaviour
         _inputActions.Player.CogerItem.performed += CogerItem;
         _ScrollAction= _inputActions.Player.MouseWheel;
         _inputActions.Player.Inventari.performed += ObrirTancarInventari;
-        //_inputActions.Player.LanzarObjeto.performed += LanzarObjeto;
+        _inputActions.Player.LanzarItem.performed += LanzarObjeto;
         _RunAction= _inputActions.Player.Run;
         _ScrollAction = _inputActions.Player.MouseWheel;
         localScaleCollider = this.transform.localScale;
@@ -100,7 +101,6 @@ public class Player : MonoBehaviour
 
 
         _inputActions.Player.Enable();
-        //rb = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         camaraInitialPosition = camaraPrimera.transform.localPosition;
@@ -125,14 +125,14 @@ public class Player : MonoBehaviour
         if (!tengoItem)
         {
             GameObject equipo = Instantiate(itemAEquipar, itemSlot.transform);
-            itemAEquipar.transform.position = itemSlot.transform.position;
+            equipo.transform.position = itemSlot.transform.position;
             tengoItem = true;
+            objetoEquipado = equipo;
         }
     }
 
     private void CogerItem(InputAction.CallbackContext context)
     {
-        Debug.Log("FUNCIONA?");
         if (interactuable != null)
         {
      
@@ -221,15 +221,13 @@ public class Player : MonoBehaviour
 
     private void LanzarObjeto(InputAction.CallbackContext context)
     {
-        if(Physics.Raycast(camaraPrimera.transform.position, camaraPrimera.transform.forward, out RaycastHit hitInfo, 5f))
+        if (objetoEquipado != null)
         {
-            if(hitInfo.collider.gameObject.TryGetComponent<ObjectsScript>(out ObjectsScript objs))
-            {
-                objs.Lanzar();
-            }
+            objetoEquipado.GetComponent<Rigidbody>().isKinematic = false;
+            objetoEquipado.GetComponent<ObjectsScript>().camaraPrimera=camaraPrimera;
+            //faltaria ponerle el sonido
+            objetoEquipado.GetComponent<ObjectsScript>().Lanzar();
         }
-        Debug.DrawRay(puntoDisparo.transform.position, puntoDisparo.transform.forward, Color.magenta, 5f);
-        Debug.Log("TIRO DEBUGRAY");
     }
 
     enum PlayerStates { MOVE, RUN, HURT, RUNMOVE }
@@ -301,7 +299,6 @@ public class Player : MonoBehaviour
                 }
                 onNotInteractuable?.Invoke();
             }
-            //Aqui puedes poner lo de "Pulsa E para coger x";
             yield return new WaitForSeconds(0.5f);
         }
 

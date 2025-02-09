@@ -1528,7 +1528,7 @@ MonoBehaviour:
   _LookVelocity: 48
   _InvertY: 0
   hp: 50
-  layerMask:
+  _LayerEnemic:
     serializedVersion: 2
     m_Bits: 0
   _InteractLayerMask:
@@ -1545,6 +1545,11 @@ MonoBehaviour:
   materialBase: {fileID: 0}
   actualState: 0
   stateTime: 0
+  e: {fileID: 0}
+  luzFalla: {fileID: 0}
+  luzFallaAudio: {fileID: 0}
+  luzExplota: {fileID: 0}
+  luzExplotaAudio: {fileID: 0}
 --- !u!143 &692791127
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3219,7 +3224,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -20.3, y: -477.70007}
+  m_AnchoredPosition: {x: -20.300049, y: -477.70007}
   m_SizeDelta: {x: -1344.8752, y: -955.39984}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1792017504
@@ -3396,6 +3401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelCogerItem: {fileID: 1792017502}
   player: {fileID: 692791126}
+  _Bales: {fileID: 0}
 --- !u!1 &1821490765
 GameObject:
   m_ObjectHideFlags: 0
