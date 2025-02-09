@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31096be45f5a870498de373edb0803ac, type: 3}
-  m_Name: Planta
+  m_Script: {fileID: 11500000, guid: 52406a5ec308eef479ce6fc673d69fb9, type: 3}
+  m_Name: Item - Amunition
   m_EditorClassIdentifier: 
-  nCuracio: 10
+  nom: Bales
+  descripcio: Per la pistola, duh
+  sprite: {fileID: 2097949319, guid: f282ca80c2ba11c41b71183e1089ce1d, type: 3}
+  bales: 6

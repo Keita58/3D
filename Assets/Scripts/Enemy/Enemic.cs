@@ -18,7 +18,6 @@ public class Enemic : MonoBehaviour, IDamageable
     [SerializeField] private bool _Detectat;
     [SerializeField] private bool _Cami;
     [SerializeField] private bool _AtacarBoolean;
-    [SerializeField] private Collider _DetectarCollider;
     [SerializeField] private LayerMask _LayerJugador;
     [SerializeField] private GameObject _Jugador;
 

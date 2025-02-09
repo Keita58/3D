@@ -37,4 +37,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("Player usa item de curación");
         inventari.UsarItem(item);
     }
+
+    public void UsarRecarregaBales(int numBales, Item item)
+    {
+        Debug.Log("Player recarrega les bales");
+        inventari.UsarItem(item);
+    }
 }
