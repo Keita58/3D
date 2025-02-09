@@ -72,10 +72,11 @@ public class Player : MonoBehaviour
     bool inventariObert = false;
     bool corriendo = false;
     bool empezarCorrutinaCorrer = false;
-    private int _Bales;
+    public int _Bales { get; private set; }
 
     public event Action onInteractuable;
     public event Action onNotInteractuable;
+    public event Action OnDisparar;
 
     private void Awake()
     {
@@ -146,7 +147,7 @@ public class Player : MonoBehaviour
     public void RecarregaBales(int bales)
     {
         _Bales += bales;
-        Debug.Log("Bales del jugador: " + _Bales);
+        OnDisparar?.Invoke();
     }
 
     private void CambiarCamara(InputAction.CallbackContext context)
@@ -214,6 +215,7 @@ public class Player : MonoBehaviour
                 e.RebreMal(5);
             }
             _Bales--;
+            OnDisparar?.Invoke();
         }
     }
 
