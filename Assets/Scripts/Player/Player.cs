@@ -281,7 +281,7 @@ public class Player : MonoBehaviour
                 }
             }
             //Aqui puedes poner lo de "Pulsa E para coger x";
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
         }
 
        
@@ -339,7 +339,7 @@ public class Player : MonoBehaviour
                     moving = true;
                     StartCoroutine(EmetreSOMove());
                 }
-                if (_RunAction.IsPressed())
+                if (_RunAction.IsPressed() && characterController.isGrounded)
                 {
                     ChangeState(PlayerStates.RUN);
                     Debug.Log("ENTRO");
