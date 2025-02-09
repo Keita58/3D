@@ -1,13 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]
 public abstract class Item : ScriptableObject
 {
-    [SerializeField]
-    string itemId {  get; set; }
-    string descripcio { get; set; }
-
-    Sprite sprite { get; set; }
+    public abstract string Nom { get; }
+    public abstract string Descripcio { get; }
+    public abstract Sprite Sprite { get; }
 
     public abstract void Usar();
 }

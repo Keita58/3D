@@ -108,6 +108,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Inventari"",
+                    ""type"": ""Button"",
+                    ""id"": ""634f24cd-ad05-4d88-bbce-2dac490e4e7b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -416,6 +425,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""CogerItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f8589c0c-86fc-42bb-a792-f8dbd1a3952a"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventari"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1012,6 +1032,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_CambiarCamera = m_Player.FindAction("CambiarCamera", throwIfNotFound: true);
         m_Player_MouseWheel = m_Player.FindAction("MouseWheel", throwIfNotFound: true);
         m_Player_CogerItem = m_Player.FindAction("CogerItem", throwIfNotFound: true);
+        m_Player_Inventari = m_Player.FindAction("Inventari", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1100,6 +1121,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_CambiarCamera;
     private readonly InputAction m_Player_MouseWheel;
     private readonly InputAction m_Player_CogerItem;
+    private readonly InputAction m_Player_Inventari;
     public struct PlayerActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1113,6 +1135,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @CambiarCamera => m_Wrapper.m_Player_CambiarCamera;
         public InputAction @MouseWheel => m_Wrapper.m_Player_MouseWheel;
         public InputAction @CogerItem => m_Wrapper.m_Player_CogerItem;
+        public InputAction @Inventari => m_Wrapper.m_Player_Inventari;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1149,6 +1172,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @CogerItem.started += instance.OnCogerItem;
             @CogerItem.performed += instance.OnCogerItem;
             @CogerItem.canceled += instance.OnCogerItem;
+            @Inventari.started += instance.OnInventari;
+            @Inventari.performed += instance.OnInventari;
+            @Inventari.canceled += instance.OnInventari;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1180,6 +1206,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @CogerItem.started -= instance.OnCogerItem;
             @CogerItem.performed -= instance.OnCogerItem;
             @CogerItem.canceled -= instance.OnCogerItem;
+            @Inventari.started -= instance.OnInventari;
+            @Inventari.performed -= instance.OnInventari;
+            @Inventari.canceled -= instance.OnInventari;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1371,6 +1400,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnCambiarCamera(InputAction.CallbackContext context);
         void OnMouseWheel(InputAction.CallbackContext context);
         void OnCogerItem(InputAction.CallbackContext context);
+        void OnInventari(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
