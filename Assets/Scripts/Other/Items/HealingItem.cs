@@ -17,7 +17,6 @@ public class HealingItem : Item
     [SerializeField] private int healing;
     public int Healing => healing;
 
-
     public override void Usar()
     {
         GameManager.instance.UsarItemCuracio(healing, this);

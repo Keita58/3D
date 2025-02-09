@@ -42,4 +42,10 @@ public class GameManager : MonoBehaviour
     {
         inventari.UsarItem(item);
     }
+
+    public void UsarItemThrowable(Item item, GameObject objeto)
+    {
+        inventari.UsarItem(item);
+        player.EquiparItem(objeto);
+    }
 }

@@ -115,18 +115,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void EquiparItem(GameObject itemAEquipar)
+    {
+        if (!tengoItem)
+        {
+            GameObject equipo = Instantiate(itemAEquipar, itemSlot.transform);
+            itemAEquipar.transform.position = itemSlot.transform.position;
+            tengoItem = true;
+        }
+    }
+
     private void CogerItem(InputAction.CallbackContext context)
     {
         Debug.Log("FUNCIONA?");
-        if (interactuable != null && !tengoItem)
+        if (interactuable != null)
         {
-            //interactuable.transform.parent = itemSlot.transform;
-            //interactuable.transform.position = itemSlot.transform.position;
-            //interactuable.transform.localRotation = Quaternion.identity;
-            //interactuable.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            //interactuable.GetComponent<MeshRenderer>().materials = new Material[] { materialBase };
-            //interactuable=null;
-            //tengoItem = true;
+     
             GameManager.instance.AfegirItem(interactuable.GetComponent<CogerItem>().item);
             Debug.Log("QUE COJO?"+interactuable.GetComponent<CogerItem>().item);
 
@@ -314,7 +318,6 @@ public class Player : MonoBehaviour
         Vector2 movementInput = _MoveAction.ReadValue<Vector2>();
 
         stateTime += Time.deltaTime;
-        Debug.Log(actualState);
         switch (actualState)
         {
             
