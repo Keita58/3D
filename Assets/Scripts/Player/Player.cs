@@ -138,7 +138,7 @@ public class Player : MonoBehaviour
      
             GameManager.instance.AfegirItem(interactuable.GetComponent<CogerItem>().item);
             Debug.Log("QUE COJO?"+interactuable.GetComponent<CogerItem>().item);
-
+            interactuable.gameObject.SetActive(false);
             Debug.Log("Entro Coger item");
         }
         
@@ -227,6 +227,7 @@ public class Player : MonoBehaviour
             objetoEquipado.GetComponent<ObjectsScript>().camaraPrimera=camaraPrimera;
             //faltaria ponerle el sonido
             objetoEquipado.GetComponent<ObjectsScript>().Lanzar();
+            objetoEquipado.transform.parent = null;
         }
     }
 
@@ -352,11 +353,15 @@ public class Player : MonoBehaviour
                 {
                     moving= false;
                 }
-                if (!moving)
+                else
                 {
-                    moving = true;
-                    StartCoroutine(EmetreSOMove());
+                    if (!moving)
+                    {
+                        moving = true;
+                        StartCoroutine(EmetreSOMove());
+                    }
                 }
+               
                 if (_RunAction.IsPressed() && characterController.isGrounded)
                 {
                     ChangeState(PlayerStates.RUN);

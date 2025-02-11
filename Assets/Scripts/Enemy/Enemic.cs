@@ -19,6 +19,7 @@ public class Enemic : MonoBehaviour, IDamageable
     [SerializeField] private bool _Cami;
     [SerializeField] private bool _AtacarBoolean;
     [SerializeField] private LayerMask _LayerJugador;
+    [SerializeField] private LayerMask _LayerParets;
     [SerializeField] private GameObject _Jugador;
 
     private NavMeshAgent _NavMeshAgent;
@@ -176,7 +177,7 @@ public class Enemic : MonoBehaviour, IDamageable
             if (angleVisio <= 120f)
             {
                 //Raycast amb les layers de paret i player i si tenim la paret no seguim, sinó seguim el jugador
-                Collider[] a = Physics.OverlapSphere(transform.forward, 10f, Physics.AllLayers);
+                Collider[] a = Physics.OverlapSphere(transform.position, 10f, _LayerParets);
                 Collider jugador2 = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
 
                 if (jugador2 != null)
