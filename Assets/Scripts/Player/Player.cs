@@ -177,6 +177,8 @@ public class Player : MonoBehaviour
             centerCharacterController = 1f;
             agachado = true;
             _VelocityRun /= 2;
+            moving = false;
+            StartCoroutine(EmetreSOCrouch());
         }
         else
         {
@@ -191,6 +193,7 @@ public class Player : MonoBehaviour
             characterController.enabled = false;
             characterController.enabled=true;
             agachado = false;
+            moving = true;
             _VelocityRun *= 2;
         }
     }
@@ -438,6 +441,19 @@ public class Player : MonoBehaviour
             if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
             {
                 en.Escuchar(this.transform.position, 7);
+            }
+            yield return new WaitForSeconds(1);
+        }
+    }
+    
+    IEnumerator EmetreSOCrouch()
+    {
+        while (agachado)
+        {
+            Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, 5);
+            if (GetComponent<Collider>().gameObject.TryGetComponent<Enemic>(out Enemic en))
+            {
+                en.Escuchar(this.transform.position, 5);
             }
             yield return new WaitForSeconds(1);
         }

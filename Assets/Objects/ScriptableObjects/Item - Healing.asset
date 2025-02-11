@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Planta
   descripcio: Muy bonita
-  sprite: {fileID: -363907070, guid: debcdf3ecf4ad604e8ae23bb2d5d6a8c, type: 3}
+  sprite: {fileID: -4355272409397247203, guid: 2054b5af2741f2b4883b1eca121147d0, type: 3}
   healing: 20

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Botella
   descripcio: Muy bonita
-  sprite: {fileID: 1708622039, guid: f282ca80c2ba11c41b71183e1089ce1d, type: 3}
+  sprite: {fileID: -6619111317931664985, guid: 806f3d1849df7ba469eee7e1607010ab, type: 3}
   itemPrefab: {fileID: 1963995658890286290, guid: 53c69b9f2053a644891a1562b3882de2, type: 3}

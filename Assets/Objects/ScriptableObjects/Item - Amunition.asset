@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Bales
   descripcio: Per la pistola, duh
-  sprite: {fileID: 2097949319, guid: f282ca80c2ba11c41b71183e1089ce1d, type: 3}
+  sprite: {fileID: 4871502181275585520, guid: 9af05b0f486c6c74381785754b7ab54d, type: 3}
   bales: 6

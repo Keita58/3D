@@ -9,8 +9,8 @@ public class ObjectsScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        this.GetComponent<MeshFilter>().mesh = mySound.mesh;
-        this.GetComponent<MeshCollider>().sharedMesh = mySound.mesh;    
+        //this.GetComponent<MeshFilter>().mesh = mySound.mesh;
+        //this.GetComponent<MeshCollider>().sharedMesh = mySound.mesh;    
         this.transform.localScale = this.transform.localScale/2;
         this.AddComponent<CapsuleCollider>();
     }
