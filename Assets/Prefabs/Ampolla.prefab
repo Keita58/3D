@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8280521169100612236}
   - component: {fileID: 4241099046406880073}
   - component: {fileID: 7390199147272683751}
+  - component: {fileID: 1952635743311542869}
   m_Layer: 0
   m_Name: Ampolla
   m_TagString: Untagged
@@ -138,3 +139,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1952635743311542869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963995658890286290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db9e2683304a55a40ae1bb4cbb1be228, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mySound: {fileID: 0}
+  camaraPrimera: {fileID: 0}

@@ -126,6 +126,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LanzarItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f94f0ba-4de9-4324-a5fc-88478746464c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -456,6 +465,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""69d0d6b7-0bdd-4452-9d90-8f86d463a191"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LanzarItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1054,6 +1074,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_CogerItem = m_Player.FindAction("CogerItem", throwIfNotFound: true);
         m_Player_Inventari = m_Player.FindAction("Inventari", throwIfNotFound: true);
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
+        m_Player_LanzarItem = m_Player.FindAction("LanzarItem", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1144,6 +1165,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_CogerItem;
     private readonly InputAction m_Player_Inventari;
     private readonly InputAction m_Player_Run;
+    private readonly InputAction m_Player_LanzarItem;
     public struct PlayerActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1159,6 +1181,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @CogerItem => m_Wrapper.m_Player_CogerItem;
         public InputAction @Inventari => m_Wrapper.m_Player_Inventari;
         public InputAction @Run => m_Wrapper.m_Player_Run;
+        public InputAction @LanzarItem => m_Wrapper.m_Player_LanzarItem;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1201,6 +1224,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Run.started += instance.OnRun;
             @Run.performed += instance.OnRun;
             @Run.canceled += instance.OnRun;
+            @LanzarItem.started += instance.OnLanzarItem;
+            @LanzarItem.performed += instance.OnLanzarItem;
+            @LanzarItem.canceled += instance.OnLanzarItem;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1238,6 +1264,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Run.started -= instance.OnRun;
             @Run.performed -= instance.OnRun;
             @Run.canceled -= instance.OnRun;
+            @LanzarItem.started -= instance.OnLanzarItem;
+            @LanzarItem.performed -= instance.OnLanzarItem;
+            @LanzarItem.canceled -= instance.OnLanzarItem;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1431,6 +1460,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnCogerItem(InputAction.CallbackContext context);
         void OnInventari(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnLanzarItem(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

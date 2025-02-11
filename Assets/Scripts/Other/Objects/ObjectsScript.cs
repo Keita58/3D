@@ -5,7 +5,7 @@ public class ObjectsScript : MonoBehaviour
 {
     [SerializeField]
     Sound mySound;
-    [SerializeField] GameObject camaraPrimera;
+    [SerializeField] public GameObject camaraPrimera;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -13,12 +13,6 @@ public class ObjectsScript : MonoBehaviour
         this.GetComponent<MeshCollider>().sharedMesh = mySound.mesh;    
         this.transform.localScale = this.transform.localScale/2;
         this.AddComponent<CapsuleCollider>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
     bool lanzado = false;
     public void Lanzar()
