@@ -135,6 +135,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Flashlight"",
+                    ""type"": ""Button"",
+                    ""id"": ""857fb087-f7de-4d66-9536-be0897245632"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -471,11 +480,22 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""69d0d6b7-0bdd-4452-9d90-8f86d463a191"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""LanzarItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""21cebd1c-64dd-4bfe-b432-c78400b3acfa"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Flashlight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1075,6 +1095,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Inventari = m_Player.FindAction("Inventari", throwIfNotFound: true);
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
         m_Player_LanzarItem = m_Player.FindAction("LanzarItem", throwIfNotFound: true);
+        m_Player_Flashlight = m_Player.FindAction("Flashlight", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1166,6 +1187,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Inventari;
     private readonly InputAction m_Player_Run;
     private readonly InputAction m_Player_LanzarItem;
+    private readonly InputAction m_Player_Flashlight;
     public struct PlayerActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1182,6 +1204,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Inventari => m_Wrapper.m_Player_Inventari;
         public InputAction @Run => m_Wrapper.m_Player_Run;
         public InputAction @LanzarItem => m_Wrapper.m_Player_LanzarItem;
+        public InputAction @Flashlight => m_Wrapper.m_Player_Flashlight;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1227,6 +1250,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @LanzarItem.started += instance.OnLanzarItem;
             @LanzarItem.performed += instance.OnLanzarItem;
             @LanzarItem.canceled += instance.OnLanzarItem;
+            @Flashlight.started += instance.OnFlashlight;
+            @Flashlight.performed += instance.OnFlashlight;
+            @Flashlight.canceled += instance.OnFlashlight;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1267,6 +1293,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @LanzarItem.started -= instance.OnLanzarItem;
             @LanzarItem.performed -= instance.OnLanzarItem;
             @LanzarItem.canceled -= instance.OnLanzarItem;
+            @Flashlight.started -= instance.OnFlashlight;
+            @Flashlight.performed -= instance.OnFlashlight;
+            @Flashlight.canceled -= instance.OnFlashlight;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1461,6 +1490,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnInventari(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnLanzarItem(InputAction.CallbackContext context);
+        void OnFlashlight(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Lantern : MonoBehaviour
 {
@@ -7,8 +8,13 @@ public class Lantern : MonoBehaviour
 
     // Private variables
     private Light flashlight;
+    private InputSystem_Actions _InputActions;
     private void Start()
     {
+        _InputActions = new InputSystem_Actions();
+        _InputActions.Player.Flashlight.started += FlashLight;
+        _InputActions.Player.Enable();
+
         // Get Light component in the same GameObject
         flashlight = GetComponent<Light>();
 
@@ -22,20 +28,17 @@ public class Lantern : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FlashLight(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (flashlight != null)
         {
-            if (flashlight != null)
-            {
-                flashlight.enabled = !flashlight.enabled;
+            flashlight.enabled = !flashlight.enabled;
 
-                // Play audio effect based on flashlight state
-            }
-            else
-            {
-                Debug.LogWarning("Cannot control flashlight as Light component is not attached.");
-            }
+            // Play audio effect based on flashlight state
+        }
+        else
+        {
+            Debug.LogWarning("Cannot control flashlight as Light component is not attached.");
         }
     }
 }
