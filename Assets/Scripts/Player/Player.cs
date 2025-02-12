@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.VFX;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Player : MonoBehaviour
@@ -78,6 +79,8 @@ public class Player : MonoBehaviour
     public event Action onInteractuable;
     public event Action onNotInteractuable;
     public event Action OnDisparar;
+
+    [SerializeField] private VisualEffect _Pols;
 
     private void Awake()
     {
@@ -329,6 +332,7 @@ public class Player : MonoBehaviour
             case PlayerStates.RUN:
                 corriendo = true;
                 StartCoroutine(EmetreSORun());
+                StartCoroutine(EmetrePols());
                 break;
             default:
                 break;
@@ -362,6 +366,7 @@ public class Player : MonoBehaviour
                     {
                         moving = true;
                         StartCoroutine(EmetreSOMove());
+                        StartCoroutine(EmetrePols());
                     }
                 }
                
@@ -456,6 +461,18 @@ public class Player : MonoBehaviour
                 en.Escuchar(this.transform.position, 5);
             }
             yield return new WaitForSeconds(1);
+        }
+    }
+
+    IEnumerator EmetrePols()
+    {
+        while(moving || corriendo)
+        {
+            _Pols.Play();
+            if(corriendo)
+                yield return new WaitForSeconds(0.45f);
+            else
+                yield return new WaitForSeconds(0.6f);
         }
     }
 
