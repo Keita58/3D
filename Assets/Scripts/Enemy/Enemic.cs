@@ -1,14 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering.HighDefinition;
 
 public class Enemic : MonoBehaviour, IDamageable
 {
@@ -19,7 +12,7 @@ public class Enemic : MonoBehaviour, IDamageable
     [SerializeField] private bool _Cami;
     [SerializeField] private bool _AtacarBoolean;
     [SerializeField] private LayerMask _LayerJugador;
-    [SerializeField] private LayerMask _LayerParets;
+    [SerializeField] private LayerMask _LayerMask;
     [SerializeField] private GameObject _Jugador;
 
     private NavMeshAgent _NavMeshAgent;
@@ -177,25 +170,10 @@ public class Enemic : MonoBehaviour, IDamageable
             if (angleVisio <= 120f)
             {
                 //Raycast amb les layers de paret i player i si tenim la paret no seguim, sinó seguim el jugador
-                Collider[] a = Physics.OverlapSphere(transform.position, 10f, _LayerParets);
-                Collider jugador2 = Physics.OverlapSphere(transform.position, 10f, _LayerJugador).FirstOrDefault();
-
-                if (jugador2 != null)
+                
+                if (Physics.Raycast(transform.position, _Jugador.transform.position, out RaycastHit info,_LayerMask))
                 {
-                    bool paret = false;
-                    foreach (Collider r in a)
-                    {
-                        Vector3 dis1 = r.transform.position - transform.forward; //Objecte pel camí
-                        Vector3 dis2 = jugador2.transform.position - transform.forward; //Personatge                      
-                        if (dis1.z < dis2.z)
-                        {
-                            paret = true;
-                            Debug.Log("Tinc una paret al davant!");
-                            break;
-                        }
-                    }
-
-                    if (!paret)
+                    if(info.transform.gameObject.layer == _LayerJugador)
                     {
                         Debug.Log("Detecto alguna cosa aprop!");
                         StopAllCoroutines();
@@ -204,6 +182,7 @@ public class Enemic : MonoBehaviour, IDamageable
                         if (_CurrentState != EnemyStates.PERSEGUIR)
                             ChangeState(EnemyStates.PERSEGUIR);
                     }
+
                 }
             }
             else if (_Perseguir)

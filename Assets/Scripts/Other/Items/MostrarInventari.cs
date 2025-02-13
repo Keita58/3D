@@ -12,12 +12,7 @@ public class MostrarInventari : MonoBehaviour
 
     [SerializeField] GameObject itemPrefab;
 
-    // Update is called once per frame
 
-    private void Start()
-    {
-        
-    }
     public void Mostrar()
     {
         Amagar();
@@ -43,7 +38,4 @@ public class MostrarInventari : MonoBehaviour
             }
         }
     }
-
-
-
 }

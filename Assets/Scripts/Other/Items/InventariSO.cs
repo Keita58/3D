@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "InventariSO", menuName = "Scriptable Objects/Items/Inventari")]

@@ -12238,9 +12238,9 @@ MonoBehaviour:
   _LayerJugador:
     serializedVersion: 2
     m_Bits: 8
-  _LayerParets:
+  _LayerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 520
   _Jugador: {fileID: 1875107623}
 --- !u!195 &2137863485
 NavMeshAgent:

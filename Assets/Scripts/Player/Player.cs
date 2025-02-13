@@ -1,16 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.VFX;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Player : MonoBehaviour
 {
@@ -113,11 +107,13 @@ public class Player : MonoBehaviour
     {
         if (!inventariObert)
         {
+            Cursor.visible = true;
             GameManager.instance.ObrirInventari(this.gameObject);
             inventariObert = true;
         }
         else
         {
+            Cursor.visible = false;
             GameManager.instance.TancarInventari();
             inventariObert = false;
         }
